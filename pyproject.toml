@@ -22,9 +22,15 @@ keywords = ["aws", "ecs", "cli"]
 [tool.poetry.dependencies]
 python = "^3.6"
 click = "^7.0"
+boto3 = "^1.9"
+terminaltables = "^3.1"
+colorclass = "^2.2"
 
 [tool.poetry.dev-dependencies]
 black = "=19.3b0"
+
+[tool.poetry.scripts]
+ecs = "ecs_tool.cli:cli"
 
 [build-system]
 requires = ["poetry>=0.12"]
