@@ -15,9 +15,17 @@ def cli():
     pass
 
 
-@cli.command(help="Get list of services")
+@cli.command()
 @click.option("--cluster", default="default", help="Cluster name or ARN.")
 def services(cluster):
+    """
+    Get list of services.
+
+    D - Desired count
+    P - Pending count
+    R - Running count
+    """
+
     client = boto3.client("ecs")
 
     table_data = [
@@ -25,9 +33,9 @@ def services(cluster):
             "Service name",
             "Task definition",
             "Status",
-            "D*",
-            "P*",
-            "R*",
+            "D",
+            "P",
+            "R",
             "Service type",
             "Launch type",
         )
@@ -56,7 +64,6 @@ def services(cluster):
 
     table = SingleTable(table_data)
     print(table.table)
-    print("D - Desired count\nP - Pending count\nR - Running coun")
 
 
 if __name__ == "__main__":
