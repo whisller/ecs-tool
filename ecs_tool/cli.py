@@ -1,3 +1,4 @@
+import sys
 from textwrap import wrap
 
 import boto3
@@ -55,6 +56,10 @@ def services(cluster):
     ]
 
     list_services = client.list_services(cluster=cluster)
+    if not list_services["serviceArns"]:
+        click.echo("No results found.")
+        sys.exit()
+
     describe_services = client.describe_services(
         cluster=cluster, services=list_services["serviceArns"]
     )
@@ -110,6 +115,10 @@ def tasks(cluster, service_name=None, status=None, launch_type=None):
         args["launchType"] = launch_type
 
     list_tasks = client.list_tasks(**args)
+    if not list_tasks["taskArns"]:
+        click.echo("No results found.")
+        sys.exit()
+
     describe_tasks = client.describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
     for task in describe_tasks["tasks"]:
         status_colour = TASK_STATUS_TO_COLOUR.get(task["lastStatus"])
