@@ -3,6 +3,7 @@ from textwrap import wrap
 
 import boto3
 import click
+from botocore.exceptions import NoRegionError, NoCredentialsError
 from colorclass import Color
 from terminaltables import SingleTable
 
@@ -33,7 +34,14 @@ class EcsCommand(click.core.Command):
                                                 show_default=True))
 
 
-ecs_client = boto3.client("ecs")
+try:
+    ecs_client = boto3.client("ecs")
+except NoRegionError as e:
+    click.secho(f"AWS Configuration: {e}", fg="red")
+    sys.exit()
+except NoCredentialsError as e:
+    click.secho(f"AWS Configuration: {e}.", fg="red")
+    sys.exit()
 
 
 @click.group()
@@ -66,7 +74,7 @@ def services(cluster):
 
     list_services = ecs_client.list_services(cluster=cluster)
     if not list_services["serviceArns"]:
-        click.echo("No results found.")
+        click.secho("No results found.", fg="red")
         sys.exit()
 
     describe_services = ecs_client.describe_services(
@@ -128,7 +136,7 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
 
     list_tasks = ecs_client.list_tasks(**args)
     if not list_tasks["taskArns"]:
-        click.echo("No results found.")
+        click.secho("No results found.", fg="red")
         sys.exit()
 
     describe_tasks = ecs_client.describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
@@ -142,7 +150,8 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
                 Color(f"{{{status_colour}}}{task['lastStatus']}{{/{status_colour}}}"),
                 task.get("startedAt").strftime(DATE_FORMAT) if task.get("startedAt") else "",
                 task.get("stoppedAt").strftime(DATE_FORMAT) if task.get("stoppedAt") else "",
-                task.get("stoppedAt")-task.get("startedAt") if all((task.get("startedAt"), task.get("stoppedAt"))) else "",
+                task.get("stoppedAt") - task.get("startedAt") if all(
+                    (task.get("startedAt"), task.get("stoppedAt"))) else "",
                 task.get("containers")[0].get("exitCode") if task.get("containers")[0].get("exitCode") else "",
                 _wrap(task.get("containers")[0].get("reason"), 10),
                 _wrap(task.get("stoppedReason"), 10)
