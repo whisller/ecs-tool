@@ -26,13 +26,19 @@ TASK_STATUS_TO_COLOUR = {
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S %Z"
 
 
+class EcsCommand(click.core.Command):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.params.insert(0, click.core.Option(('--cluster',), default="default", help='Cluster name or ARN.',
+                                                show_default=True))
+
+
 @click.group()
 def cli():
     pass
 
 
-@cli.command()
-@click.option("--cluster", default="default", help="Cluster name or ARN.", show_default=True)
+@cli.command(cls=EcsCommand)
 def services(cluster):
     """
     Get list of services.
@@ -87,9 +93,9 @@ def services(cluster):
     print(table.table)
 
 
-@cli.command()
-@click.option("--cluster", default="default", help="Cluster name or ARN.", show_default=True)
-@click.option("--status", type=click.Choice(["RUNNING", "STOPPED"]), default="RUNNING", help="Task status", show_default=True)
+@cli.command(cls=EcsCommand)
+@click.option("--status", type=click.Choice(["RUNNING", "STOPPED"]), default="RUNNING", help="Task status",
+              show_default=True)
 @click.option("--service-name", help="Service name")
 @click.option("--family", help="Family name")
 @click.option("--launch-type", type=click.Choice(["EC2", "FARGATE"]), help="Launch type")
@@ -147,6 +153,11 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     print(table.table)
 
 
+@cli.command(cls=EcsCommand)
+def run_task(cluster):
+    pass
+
+
 if __name__ == "__main__":
     cli()
 
@@ -155,4 +166,4 @@ def _wrap(text, size):
     if not text:
         return
 
-    return "\n".join(wrap(text, size))+"\n"
+    return "\n".join(wrap(text, size)) + "\n"
