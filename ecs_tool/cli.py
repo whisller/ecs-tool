@@ -33,6 +33,9 @@ class EcsCommand(click.core.Command):
                                                 show_default=True))
 
 
+ecs_client = boto3.client("ecs")
+
+
 @click.group()
 def cli():
     pass
@@ -48,8 +51,6 @@ def services(cluster):
     R - Running count
     """
 
-    client = boto3.client("ecs")
-
     table_data = [
         (
             "Service name",
@@ -63,12 +64,12 @@ def services(cluster):
         )
     ]
 
-    list_services = client.list_services(cluster=cluster)
+    list_services = ecs_client.list_services(cluster=cluster)
     if not list_services["serviceArns"]:
         click.echo("No results found.")
         sys.exit()
 
-    describe_services = client.describe_services(
+    describe_services = ecs_client.describe_services(
         cluster=cluster, services=list_services["serviceArns"]
     )
 
@@ -104,8 +105,6 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     Get list of tasks.
     """
 
-    client = boto3.client("ecs")
-
     table_data = [
         ("Task", "Task definition", "Status", "Started at", "Stopped at", "Exit code", "Exit reason", "Stopped reason")
     ]
@@ -126,12 +125,12 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     if launch_type:
         args["launchType"] = launch_type
 
-    list_tasks = client.list_tasks(**args)
+    list_tasks = ecs_client.list_tasks(**args)
     if not list_tasks["taskArns"]:
         click.echo("No results found.")
         sys.exit()
 
-    describe_tasks = client.describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
+    describe_tasks = ecs_client.describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
     for task in describe_tasks["tasks"]:
         status_colour = TASK_STATUS_TO_COLOUR.get(task["lastStatus"])
 
@@ -140,9 +139,9 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
                 task["taskArn"].rsplit("task/", 1)[-1],
                 task["taskDefinitionArn"].rsplit("task-definition/", 1)[-1],
                 Color(f"{{{status_colour}}}{task['lastStatus']}{{/{status_colour}}}"),
-                task.get("startedAt").strftime(DATE_FORMAT),
-                task.get("stoppedAt").strftime(DATE_FORMAT),
-                task.get("containers")[0].get("exitCode"),
+                task.get("startedAt").strftime(DATE_FORMAT) if task.get("startedAt") else "",
+                task.get("stoppedAt").strftime(DATE_FORMAT) if task.get("stoppedAt") else "",
+                task.get("containers")[0].get("exitCode") if task.get("containers")[0].get("exitCode") else "",
                 _wrap(task.get("containers")[0].get("reason"), 10),
                 _wrap(task.get("stoppedReason"), 10)
             ]
@@ -164,6 +163,6 @@ if __name__ == "__main__":
 
 def _wrap(text, size):
     if not text:
-        return
+        return ""
 
     return "\n".join(wrap(text, size)) + "\n"
