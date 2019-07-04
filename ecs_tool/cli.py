@@ -23,6 +23,8 @@ TASK_STATUS_TO_COLOUR = {
     "STOPPED": "autored"
 }
 
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S %Z"
+
 
 @click.group()
 def cli():
@@ -132,8 +134,8 @@ def tasks(cluster, service_name=None, family=None, status=None, launch_type=None
                 task["taskArn"].rsplit("task/", 1)[-1],
                 task["taskDefinitionArn"].rsplit("task-definition/", 1)[-1],
                 Color(f"{{{status_colour}}}{task['lastStatus']}{{/{status_colour}}}"),
-                task.get("startedAt"),
-                task.get("stoppedAt"),
+                task.get("startedAt").strftime(DATE_FORMAT),
+                task.get("stoppedAt").strftime(DATE_FORMAT),
                 task.get("containers")[0].get("exitCode"),
                 _wrap(task.get("containers")[0].get("reason"), 10),
                 _wrap(task.get("stoppedReason"), 10)
