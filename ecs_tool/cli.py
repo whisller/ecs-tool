@@ -32,7 +32,7 @@ def cli():
 
 
 @cli.command()
-@click.option("--cluster", default="default", help="Cluster name or ARN.")
+@click.option("--cluster", default="default", help="Cluster name or ARN.", show_default=True)
 def services(cluster):
     """
     Get list of services.
@@ -88,12 +88,12 @@ def services(cluster):
 
 
 @cli.command()
-@click.option("--cluster", default="default", help="Cluster name or ARN.")
+@click.option("--cluster", default="default", help="Cluster name or ARN.", show_default=True)
+@click.option("--status", type=click.Choice(["RUNNING", "STOPPED"]), default="RUNNING", help="Task status", show_default=True)
 @click.option("--service-name", help="Service name")
 @click.option("--family", help="Family name")
-@click.option("--status", type=click.Choice(["RUNNING", "STOPPED"]), help="Task status")
 @click.option("--launch-type", type=click.Choice(["EC2", "FARGATE"]), help="Launch type")
-def tasks(cluster, service_name=None, family=None, status=None, launch_type=None):
+def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     """
     Get list of tasks.
     """
