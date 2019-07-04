@@ -106,7 +106,8 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     """
 
     table_data = [
-        ("Task", "Task definition", "Status", "Started at", "Stopped at", "Exit code", "Exit reason", "Stopped reason")
+        ("Task", "Task definition", "Status", "Started at", "Stopped at", "Execution time", "Exit code", "Exit reason",
+         "Stopped reason")
     ]
 
     args = {
@@ -141,6 +142,7 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
                 Color(f"{{{status_colour}}}{task['lastStatus']}{{/{status_colour}}}"),
                 task.get("startedAt").strftime(DATE_FORMAT) if task.get("startedAt") else "",
                 task.get("stoppedAt").strftime(DATE_FORMAT) if task.get("stoppedAt") else "",
+                task.get("stoppedAt")-task.get("startedAt") if all((task.get("startedAt"), task.get("stoppedAt"))) else "",
                 task.get("containers")[0].get("exitCode") if task.get("containers")[0].get("exitCode") else "",
                 _wrap(task.get("containers")[0].get("reason"), 10),
                 _wrap(task.get("stoppedReason"), 10)
