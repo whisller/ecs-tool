@@ -6,13 +6,13 @@ import click
 from colorclass import Color
 from terminaltables import SingleTable
 
-SERVICE_STATUS_TO_COLOUR = {
+SERVICE_STATUS_COLOUR = {
     "ACTIVE": "autogreen",
     "DRAINING": "autoyellow",
     "INACTIVE": "autored",
 }
 
-TASK_STATUS_TO_COLOUR = {
+TASK_STATUS_COLOUR = {
     "PROVISIONING": "autoblue",
     "PENDING": "automagenta",
     "ACTIVATING": "autoyellow",
@@ -74,7 +74,7 @@ def services(cluster):
     )
 
     for service in describe_services["services"]:
-        status_colour = SERVICE_STATUS_TO_COLOUR.get(service["status"])
+        status_colour = SERVICE_STATUS_COLOUR.get(service["status"])
 
         table_data.append(
             [
@@ -132,7 +132,7 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
 
     describe_tasks = ecs_client.describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
     for task in describe_tasks["tasks"]:
-        status_colour = TASK_STATUS_TO_COLOUR.get(task["lastStatus"])
+        status_colour = TASK_STATUS_COLOUR.get(task["lastStatus"])
 
         table_data.append(
             [
