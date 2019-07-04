@@ -88,9 +88,10 @@ def services(cluster):
 @cli.command()
 @click.option("--cluster", default="default", help="Cluster name or ARN.")
 @click.option("--service-name", help="Service name")
+@click.option("--family", help="Family name")
 @click.option("--status", type=click.Choice(["RUNNING", "STOPPED"]), help="Task status")
 @click.option("--launch-type", type=click.Choice(["EC2", "FARGATE"]), help="Launch type")
-def tasks(cluster, service_name=None, status=None, launch_type=None):
+def tasks(cluster, service_name=None, family=None, status=None, launch_type=None):
     """
     Get list of tasks.
     """
@@ -107,6 +108,9 @@ def tasks(cluster, service_name=None, status=None, launch_type=None):
 
     if service_name:
         args["serviceName"] = service_name
+
+    if family:
+        args["family"] = family
 
     if status:
         args["desiredStatus"] = status
