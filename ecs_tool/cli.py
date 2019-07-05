@@ -4,6 +4,7 @@ from textwrap import wrap
 import boto3
 import click
 from botocore.exceptions import NoRegionError, NoCredentialsError
+from click import UsageError
 from colorclass import Color
 from terminaltables import SingleTable
 
@@ -34,22 +35,24 @@ class EcsClusterCommand(click.core.Command):
                                                 show_default=True))
 
 
-try:
-    ecs_client = boto3.client("ecs")
-except (NoRegionError, NoCredentialsError) as e:
-    click.secho(f"AWS Configuration: {e}", fg="red")
-    sys.exit(1)
-
-
 @click.group()
-def cli():
-    pass
+@click.pass_context
+def cli(ctx):
+    ctx.obj = {}
+
+    try:
+        ecs_client = boto3.client("ecs")
+    except (NoRegionError, NoCredentialsError) as e:
+        raise UsageError(f"AWS Configuration: {e}")
+
+    ctx.obj["ecs_client"] = ecs_client
 
 
 @cli.command(cls=EcsClusterCommand)
 @click.option("--launch-type", type=click.Choice(["EC2", "FARGATE"]), help="Launch type")
 @click.option("--scheduling-strategy", type=click.Choice(["REPLICA", "DAEMON"]), help="Scheduling strategy")
-def services(cluster, launch_type=None, scheduling_strategy=None):
+@click.pass_context
+def services(ctx, cluster, launch_type=None, scheduling_strategy=None):
     """
     List of services.
 
@@ -81,7 +84,7 @@ def services(cluster, launch_type=None, scheduling_strategy=None):
     if scheduling_strategy:
         args["schedulingStrategy"] = scheduling_strategy
 
-    list_services = ecs_client.list_services(**args)
+    list_services = ctx.obj["ecs_client"].list_services(**args)
     if not list_services["serviceArns"]:
         click.secho("No results found.", fg="red")
         sys.exit()
@@ -117,7 +120,8 @@ def services(cluster, launch_type=None, scheduling_strategy=None):
 @click.option("--service-name", help="Service name")
 @click.option("--family", help="Family name")
 @click.option("--launch-type", type=click.Choice(["EC2", "FARGATE"]), help="Launch type")
-def tasks(cluster, status, service_name=None, family=None, launch_type=None):
+@click.pass_context
+def tasks(ctx, cluster, status, service_name=None, family=None, launch_type=None):
     """
     List of tasks.
     """
@@ -143,12 +147,12 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     if launch_type:
         args["launchType"] = launch_type
 
-    list_tasks = ecs_client.list_tasks(**args)
+    list_tasks = ctx.obj["ecs_client"].list_tasks(**args)
     if not list_tasks["taskArns"]:
         click.secho("No results found.", fg="red")
         sys.exit()
 
-    describe_tasks = ecs_client.describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
+    describe_tasks = ctx.obj["ecs_client"].describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
 
     for task in describe_tasks["tasks"]:
         status_colour = TASK_STATUS_COLOUR.get(task["lastStatus"])
@@ -177,7 +181,8 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
 @cli.command()
 @click.option("--family", help="Family name")
 @click.option("--status", type=click.Choice(["ACTIVE", "INACTIVE"]), help="Status")
-def task_definitions(family=None, status=None):
+@click.pass_context
+def task_definitions(ctx, family=None, status=None):
     """
     List of task definitions.
     """
@@ -194,7 +199,7 @@ def task_definitions(family=None, status=None):
         ("Task definition",)
     ]
 
-    response = ecs_client.list_task_definitions(**args)
+    response = ctx.obj["ecs_client"].list_task_definitions(**args)
     for definition in response["taskDefinitionArns"]:
         table_data.append([definition.rsplit("task-definition/", 1)[-1]])
 
