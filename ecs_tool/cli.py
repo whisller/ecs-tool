@@ -175,6 +175,31 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     print(table.table)
 
 
+@cli.command()
+@click.option("--family", help="Family name")
+@click.option("--status", type=click.Choice(["ACTIVE", "INACTIVE"]), help="Status")
+def task_definitions(family=None, status=None):
+    args = {}
+
+    if family:
+        args["familyPrefix"] = family
+
+    if status:
+        args["status"] = status
+
+    table_data = [
+        ("Task definition",)
+    ]
+
+    response = ecs_client.list_task_definitions(**args)
+    for definition in response["taskDefinitionArns"]:
+        table_data.append([definition.rsplit("task-definition/", 1)[-1]])
+
+    table = SingleTable(table_data)
+    table.inner_row_border = True
+    print(table.table)
+
+
 @cli.command(cls=EcsCommand)
 def run_task(cluster):
     pass
