@@ -54,7 +54,7 @@ def cli():
 @click.option("--scheduling-strategy", type=click.Choice(["REPLICA", "DAEMON"]), help="Scheduling strategy")
 def services(cluster, launch_type=None, scheduling_strategy=None):
     """
-    Get list of services.
+    List of services.
 
     D - Desired count
     P - Pending count
@@ -122,7 +122,7 @@ def services(cluster, launch_type=None, scheduling_strategy=None):
 @click.option("--launch-type", type=click.Choice(["EC2", "FARGATE"]), help="Launch type")
 def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     """
-    Get list of tasks.
+    List of tasks.
     """
 
     table_data = [
@@ -179,6 +179,10 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
 @click.option("--family", help="Family name")
 @click.option("--status", type=click.Choice(["ACTIVE", "INACTIVE"]), help="Status")
 def task_definitions(family=None, status=None):
+    """
+    List of task definitions.
+    """
+
     args = {}
 
     if family:
