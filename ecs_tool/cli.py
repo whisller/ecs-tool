@@ -50,7 +50,9 @@ def cli():
 
 
 @cli.command(cls=EcsCommand)
-def services(cluster):
+@click.option("--launch-type", type=click.Choice(["EC2", "FARGATE"]), help="Launch type")
+@click.option("--scheduling-strategy", type=click.Choice(["REPLICA", "DAEMON"]), help="Scheduling strategy")
+def services(cluster, launch_type=None, scheduling_strategy=None):
     """
     Get list of services.
 
@@ -72,7 +74,17 @@ def services(cluster):
         )
     ]
 
-    list_services = ecs_client.list_services(cluster=cluster)
+    args = {
+        "cluster": cluster
+    }
+
+    if launch_type:
+        args["launchType"] = launch_type
+
+    if scheduling_strategy:
+        args["schedulingStrategy"] = scheduling_strategy
+
+    list_services = ecs_client.list_services(**args)
     if not list_services["serviceArns"]:
         click.secho("No results found.", fg="red")
         sys.exit()
