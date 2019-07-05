@@ -27,7 +27,7 @@ TASK_STATUS_COLOUR = {
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S %Z"
 
 
-class EcsCommand(click.core.Command):
+class EcsClusterCommand(click.core.Command):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.params.insert(0, click.core.Option(('--cluster',), default="default", help='Cluster name or ARN.',
@@ -49,7 +49,7 @@ def cli():
     pass
 
 
-@cli.command(cls=EcsCommand)
+@cli.command(cls=EcsClusterCommand)
 @click.option("--launch-type", type=click.Choice(["EC2", "FARGATE"]), help="Launch type")
 @click.option("--scheduling-strategy", type=click.Choice(["REPLICA", "DAEMON"]), help="Scheduling strategy")
 def services(cluster, launch_type=None, scheduling_strategy=None):
@@ -114,7 +114,7 @@ def services(cluster, launch_type=None, scheduling_strategy=None):
     print(table.table)
 
 
-@cli.command(cls=EcsCommand)
+@cli.command(cls=EcsClusterCommand)
 @click.option("--status", type=click.Choice(["RUNNING", "STOPPED"]), default="RUNNING", help="Task status",
               show_default=True)
 @click.option("--service-name", help="Service name")
@@ -200,7 +200,7 @@ def task_definitions(family=None, status=None):
     print(table.table)
 
 
-@cli.command(cls=EcsCommand)
+@cli.command(cls=EcsClusterCommand)
 def run_task(cluster):
     pass
 
