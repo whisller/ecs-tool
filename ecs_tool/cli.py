@@ -36,11 +36,8 @@ class EcsClusterCommand(click.core.Command):
 
 try:
     ecs_client = boto3.client("ecs")
-except NoRegionError as e:
+except (NoRegionError, NoCredentialsError) as e:
     click.secho(f"AWS Configuration: {e}", fg="red")
-    sys.exit()
-except NoCredentialsError as e:
-    click.secho(f"AWS Configuration: {e}.", fg="red")
     sys.exit()
 
 
