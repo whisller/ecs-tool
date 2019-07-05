@@ -4,7 +4,6 @@ from textwrap import wrap
 import boto3
 import click
 from botocore.exceptions import NoRegionError, NoCredentialsError
-from click import UsageError
 from colorclass import Color
 from terminaltables import SingleTable
 
@@ -124,8 +123,8 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     """
 
     table_data = [
-        ("Task", "Task definition", "Status", "Command", "Started at", "Stopped at", "Execution time", "Exit code", "Exit reason",
-         "Stopped reason")
+        ("Task", "Task definition", "Status", "Command", "Started at", "Stopped at", "Execution time", "Exit code",
+         "Exit reason", "Stopped reason")
     ]
 
     args = {
@@ -150,7 +149,7 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
         sys.exit()
 
     describe_tasks = ecs_client.describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
-    print(describe_tasks)
+
     for task in describe_tasks["tasks"]:
         status_colour = TASK_STATUS_COLOUR.get(task["lastStatus"])
 
@@ -159,6 +158,7 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
                 task["taskArn"].rsplit("task/", 1)[-1],
                 task["taskDefinitionArn"].rsplit("task-definition/", 1)[-1],
                 Color(f"{{{status_colour}}}{task['lastStatus']}{{/{status_colour}}}"),
+                " ".join(task["overrides"]["containerOverrides"][0].get("command", "")),
                 task.get("startedAt").strftime(DATE_FORMAT) if task.get("startedAt") else "",
                 task.get("stoppedAt").strftime(DATE_FORMAT) if task.get("stoppedAt") else "",
                 task.get("stoppedAt") - task.get("startedAt") if all(
