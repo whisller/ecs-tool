@@ -4,6 +4,7 @@ from textwrap import wrap
 import boto3
 import click
 from botocore.exceptions import NoRegionError, NoCredentialsError
+from click import UsageError
 from colorclass import Color
 from terminaltables import SingleTable
 
@@ -38,7 +39,7 @@ try:
     ecs_client = boto3.client("ecs")
 except (NoRegionError, NoCredentialsError) as e:
     click.secho(f"AWS Configuration: {e}", fg="red")
-    sys.exit()
+    sys.exit(1)
 
 
 @click.group()
@@ -123,7 +124,7 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
     """
 
     table_data = [
-        ("Task", "Task definition", "Status", "Started at", "Stopped at", "Execution time", "Exit code", "Exit reason",
+        ("Task", "Task definition", "Status", "Command", "Started at", "Stopped at", "Execution time", "Exit code", "Exit reason",
          "Stopped reason")
     ]
 
@@ -149,6 +150,7 @@ def tasks(cluster, status, service_name=None, family=None, launch_type=None):
         sys.exit()
 
     describe_tasks = ecs_client.describe_tasks(cluster=cluster, tasks=list_tasks["taskArns"])
+    print(describe_tasks)
     for task in describe_tasks["tasks"]:
         status_colour = TASK_STATUS_COLOUR.get(task["lastStatus"])
 
