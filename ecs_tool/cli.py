@@ -104,7 +104,7 @@ def services(ctx, cluster, launch_type=None, scheduling_strategy=None):
         click.secho("No results found.", fg="red")
         sys.exit()
 
-    describe_services = ecs_client.describe_services(
+    describe_services = ctx.obj["ecs_client"].describe_services(
         cluster=cluster, services=list_services["serviceArns"]
     )
 
