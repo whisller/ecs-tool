@@ -1,16 +1,14 @@
 import sys
 import time
 from datetime import datetime
-from textwrap import wrap
 
 import boto3
 import click
 from botocore.exceptions import NoRegionError, NoCredentialsError
 from click import UsageError
-from colorclass import Color
-from terminaltables import SingleTable
 
 from ecs_tool.exceptions import WaitParameterException
+from ecs_tool.tables import ServicesTable, TasksTable, TaskDefinitionsTable
 
 SERVICE_STATUS_COLOUR = {
     "ACTIVE": "autogreen",
@@ -78,19 +76,6 @@ def services(ctx, cluster, launch_type=None, scheduling_strategy=None):
     R - Running count
     """
 
-    table_data = [
-        (
-            "Service name",
-            "Task definition",
-            "Status",
-            "D",
-            "P",
-            "R",
-            "Service type",
-            "Launch type",
-        )
-    ]
-
     args = {"cluster": cluster}
 
     if launch_type:
@@ -108,25 +93,7 @@ def services(ctx, cluster, launch_type=None, scheduling_strategy=None):
         cluster=cluster, services=list_services["serviceArns"]
     )
 
-    for service in describe_services["services"]:
-        status_colour = SERVICE_STATUS_COLOUR.get(service["status"])
-
-        table_data.append(
-            [
-                service["serviceName"],
-                service["taskDefinition"].rsplit("task-definition/", 1)[-1],
-                Color(f"{{{status_colour}}}{service['status']}{{/{status_colour}}}"),
-                service["desiredCount"],
-                service["pendingCount"],
-                service["runningCount"],
-                service["schedulingStrategy"],
-                service["launchType"],
-            ]
-        )
-
-    table = SingleTable(table_data)
-    table.inner_row_border = True
-    print(table.table)
+    print(ServicesTable.build(describe_services["services"]).table)
 
 
 @cli.command(cls=EcsClusterCommand)
@@ -147,22 +114,6 @@ def tasks(ctx, cluster, status, service_name=None, family=None, launch_type=None
     """
     List of tasks.
     """
-
-    table_data = [
-        (
-            "Task",
-            "Task definition",
-            "Status",
-            "Command",
-            "Started at",
-            "Stopped at",
-            "Execution time",
-            "Exit code",
-            "Exit reason",
-            "Stopped reason",
-        )
-    ]
-
     args = {"cluster": cluster}
 
     if service_name:
@@ -186,35 +137,7 @@ def tasks(ctx, cluster, status, service_name=None, family=None, launch_type=None
         cluster=cluster, tasks=list_tasks["taskArns"]
     )
 
-    for task in describe_tasks["tasks"]:
-        status_colour = TASK_STATUS_COLOUR.get(task["lastStatus"])
-
-        table_data.append(
-            [
-                task["taskArn"].rsplit("task/", 1)[-1],
-                task["taskDefinitionArn"].rsplit("task-definition/", 1)[-1],
-                Color(f"{{{status_colour}}}{task['lastStatus']}{{/{status_colour}}}"),
-                " ".join(task["overrides"]["containerOverrides"][0].get("command", "")),
-                task.get("startedAt").strftime(DATE_FORMAT)
-                if task.get("startedAt")
-                else "",
-                task.get("stoppedAt").strftime(DATE_FORMAT)
-                if task.get("stoppedAt")
-                else "",
-                task.get("stoppedAt") - task.get("startedAt")
-                if all((task.get("startedAt"), task.get("stoppedAt")))
-                else "",
-                task.get("containers")[0].get("exitCode")
-                if task.get("containers")[0].get("exitCode")
-                else "",
-                _wrap(task.get("containers")[0].get("reason"), 10),
-                _wrap(task.get("stoppedReason"), 10),
-            ]
-        )
-
-    table = SingleTable(table_data)
-    table.inner_row_border = True
-    print(table.table)
+    print(TasksTable.build(describe_tasks["tasks"]).table)
 
 
 @cli.command()
@@ -234,15 +157,9 @@ def task_definitions(ctx, family=None, status=None):
     if status:
         args["status"] = status
 
-    table_data = [("Task definition",)]
-
     response = ctx.obj["ecs_client"].list_task_definitions(**args)
-    for definition in response["taskDefinitionArns"]:
-        table_data.append([definition.rsplit("task-definition/", 1)[-1]])
 
-    table = SingleTable(table_data)
-    table.inner_row_border = True
-    print(table.table)
+    print(TaskDefinitionsTable.build(response["taskDefinitionArns"]).table)
 
 
 @cli.command(cls=EcsClusterCommand)
@@ -272,83 +189,37 @@ def run_task(ctx, cluster, task_definition, wait, command=None):
             ]
         }
 
-    response = ctx.obj["ecs_client"].run_task(**args)
+    ctx.obj["ecs_client"].run_task(**args)
 
-    if not wait:
-        click.echo(f"Task ARN: {response['tasks'][0]['taskArn']}")
-        sys.exit(0)
-
-    list_tasks_args = {
-        "cluster": cluster,
-        "startedBy": started_by,
-        "desiredStatus": "STOPPED",
-    }
-
-    while True:
-        list_tasks = ctx.obj["ecs_client"].list_tasks(**list_tasks_args)
-        if list_tasks["taskArns"]:
-            describe_tasks = ctx.obj["ecs_client"].describe_tasks(
-                cluster=cluster, tasks=list_tasks["taskArns"]
+    if wait:
+        while True:
+            list_tasks = ctx.obj["ecs_client"].list_tasks(
+                cluster=cluster, startedBy=started_by, desiredStatus="STOPPED"
             )
-            if len(describe_tasks["tasks"]) > 1:
-                raise WaitParameterException
+            if list_tasks["taskArns"]:
+                describe_tasks = ctx.obj["ecs_client"].describe_tasks(
+                    cluster=cluster, tasks=list_tasks["taskArns"]
+                )
+                if len(describe_tasks["tasks"]) > 1:
+                    raise WaitParameterException
 
-            task = describe_tasks["tasks"][0]
-            break
+                tasks = describe_tasks["tasks"]
+                break
 
-        time.sleep(2)
+            time.sleep(2)
 
-    table_data = [
-        (
-            "Task",
-            "Task definition",
-            "Status",
-            "Command",
-            "Started at",
-            "Stopped at",
-            "Execution time",
-            "Exit code",
-            "Exit reason",
-            "Stopped reason",
+        print(TasksTable.build(tasks).table)
+    else:
+        list_tasks = ctx.obj["ecs_client"].list_tasks(
+            cluster=cluster, startedBy=started_by
         )
-    ]
+        describe_tasks = ctx.obj["ecs_client"].describe_tasks(
+            cluster=cluster, tasks=list_tasks["taskArns"]
+        )
 
-    status_colour = TASK_STATUS_COLOUR.get(task["lastStatus"])
-
-    table_data.append(
-        [
-            task["taskArn"].rsplit("task/", 1)[-1],
-            task["taskDefinitionArn"].rsplit("task-definition/", 1)[-1],
-            Color(f"{{{status_colour}}}{task['lastStatus']}{{/{status_colour}}}"),
-            " ".join(task["overrides"]["containerOverrides"][0].get("command", "")),
-            task.get("startedAt").strftime(DATE_FORMAT)
-            if task.get("startedAt")
-            else "",
-            task.get("stoppedAt").strftime(DATE_FORMAT)
-            if task.get("stoppedAt")
-            else "",
-            task.get("stoppedAt") - task.get("startedAt")
-            if all((task.get("startedAt"), task.get("stoppedAt")))
-            else "",
-            task.get("containers")[0].get("exitCode")
-            if task.get("containers")[0].get("exitCode")
-            else "",
-            _wrap(task.get("containers")[0].get("reason"), 10),
-            _wrap(task.get("stoppedReason"), 10),
-        ]
-    )
-
-    table = SingleTable(table_data)
-    table.inner_row_border = True
-    print(table.table)
+        print(TasksTable.build(describe_tasks["tasks"]).table)
+        sys.exit(0)
 
 
 if __name__ == "__main__":
     cli()
-
-
-def _wrap(text, size):
-    if not text:
-        return ""
-
-    return "\n".join(wrap(text, size)) + "\n"
