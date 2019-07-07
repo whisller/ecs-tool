@@ -218,7 +218,6 @@ def run_task(ctx, cluster, task_definition, wait, command=None):
         )
 
         print(TasksTable.build(describe_tasks["tasks"]).table)
-        sys.exit(0)
 
 
 if __name__ == "__main__":
