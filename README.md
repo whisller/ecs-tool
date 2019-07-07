@@ -10,3 +10,5 @@ That's why `ecs-tool` came to life, its aim is to be your day to day CLI tool fo
 
 It is in early stage of development though.
 
+## Some screenshots
+[#1](screenshots/services.png) | [#2](screenshots/tasks.png)
