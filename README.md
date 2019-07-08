@@ -12,3 +12,8 @@ It is in early stage of development though.
 
 ## Some screenshots
 [#1](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-services.png) | [#2](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-tasks.png)
+
+## Installation
+```sh
+pip install ecs-tool
+```
