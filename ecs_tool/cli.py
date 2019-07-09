@@ -7,6 +7,7 @@ import click
 from botocore.exceptions import NoRegionError, NoCredentialsError
 from click import UsageError
 
+from ecs_tool.ecs import fetch_services
 from ecs_tool.exceptions import WaitParameterException
 from ecs_tool.tables import ServicesTable, TasksTable, TaskDefinitionsTable
 
