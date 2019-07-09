@@ -10,25 +10,6 @@ from click import UsageError
 from ecs_tool.exceptions import WaitParameterException
 from ecs_tool.tables import ServicesTable, TasksTable, TaskDefinitionsTable
 
-SERVICE_STATUS_COLOUR = {
-    "ACTIVE": "autogreen",
-    "DRAINING": "autoyellow",
-    "INACTIVE": "autored",
-}
-
-TASK_STATUS_COLOUR = {
-    "PROVISIONING": "autoblue",
-    "PENDING": "automagenta",
-    "ACTIVATING": "autoyellow",
-    "RUNNING": "autogreen",
-    "DEACTIVATING": "autoyellow",
-    "STOPPING": "automagenta",
-    "DEPROVISIONING": "autoblue",
-    "STOPPED": "autored",
-}
-
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S %Z"
-
 
 class EcsClusterCommand(click.core.Command):
     def __init__(self, *args, **kwargs):
