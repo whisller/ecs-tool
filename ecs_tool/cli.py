@@ -7,7 +7,8 @@ import click
 from botocore.exceptions import NoRegionError, NoCredentialsError
 from click import UsageError
 
-from ecs_tool.exceptions import WaitParameterException
+from ecs_tool.ecs import fetch_services, fetch_tasks, fetch_task_definitions
+from ecs_tool.exceptions import WaitParameterException, NoResultsException
 from ecs_tool.tables import ServicesTable, TasksTable, TaskDefinitionsTable
 
 
@@ -57,24 +58,14 @@ def services(ctx, cluster, launch_type=None, scheduling_strategy=None):
     R - Running count
     """
 
-    args = {"cluster": cluster}
-
-    if launch_type:
-        args["launchType"] = launch_type
-
-    if scheduling_strategy:
-        args["schedulingStrategy"] = scheduling_strategy
-
-    list_services = ctx.obj["ecs_client"].list_services(**args)
-    if not list_services["serviceArns"]:
+    try:
+        result = fetch_services(
+            ctx.obj["ecs_client"], cluster, launch_type, scheduling_strategy
+        )
+        print(ServicesTable.build(result).table)
+    except NoResultsException:
         click.secho("No results found.", fg="red")
         sys.exit()
-
-    describe_services = ctx.obj["ecs_client"].describe_services(
-        cluster=cluster, services=list_services["serviceArns"]
-    )
-
-    print(ServicesTable.build(describe_services["services"]).table)
 
 
 @cli.command(cls=EcsClusterCommand)
@@ -95,30 +86,15 @@ def tasks(ctx, cluster, status, service_name=None, family=None, launch_type=None
     """
     List of tasks.
     """
-    args = {"cluster": cluster}
 
-    if service_name:
-        args["serviceName"] = service_name
-
-    if family:
-        args["family"] = family
-
-    if status:
-        args["desiredStatus"] = status
-
-    if launch_type:
-        args["launchType"] = launch_type
-
-    list_tasks = ctx.obj["ecs_client"].list_tasks(**args)
-    if not list_tasks["taskArns"]:
+    try:
+        result = fetch_tasks(
+            ctx.obj["ecs_client"], cluster, status, service_name, family, launch_type
+        )
+        print(TasksTable.build(result).table)
+    except NoResultsException:
         click.secho("No results found.", fg="red")
         sys.exit()
-
-    describe_tasks = ctx.obj["ecs_client"].describe_tasks(
-        cluster=cluster, tasks=list_tasks["taskArns"]
-    )
-
-    print(TasksTable.build(describe_tasks["tasks"]).table)
 
 
 @cli.command()
@@ -130,17 +106,12 @@ def task_definitions(ctx, family=None, status=None):
     List of task definitions.
     """
 
-    args = {}
-
-    if family:
-        args["familyPrefix"] = family
-
-    if status:
-        args["status"] = status
-
-    response = ctx.obj["ecs_client"].list_task_definitions(**args)
-
-    print(TaskDefinitionsTable.build(response["taskDefinitionArns"]).table)
+    try:
+        result = fetch_task_definitions(ctx.obj["ecs_client"], family, status)
+        print(TaskDefinitionsTable.build(result).table)
+    except NoResultsException:
+        click.secho("No results found.", fg="red")
+        sys.exit()
 
 
 @cli.command(cls=EcsClusterCommand)
