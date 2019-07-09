@@ -71,7 +71,7 @@ def services(ctx, cluster, launch_type=None, scheduling_strategy=None):
 @cli.command(cls=EcsClusterCommand)
 @click.option(
     "--status",
-    type=click.Choice(["RUNNING", "STOPPED"]),
+    type=click.Choice(["RUNNING", "STOPPED", "ANY"]),
     default="RUNNING",
     help="Task status",
     show_default=True,
