@@ -1,3 +1,5 @@
+import itertools
+
 from ecs_tool.exceptions import NoResultsException
 
 
@@ -44,15 +46,38 @@ def fetch_services(ecs_client, cluster, launch_type=None, scheduling_strategy=No
 def fetch_tasks(
     ecs_client, cluster, status, service_name=None, family=None, launch_type=None
 ):
-    pagination = _paginate(
-        ecs_client,
-        "list_tasks",
-        cluster=cluster,
-        desiredStatus=status,
-        serviceName=service_name,
-        family=family,
-        launchType=launch_type,
-    )
+    if status == "ANY":
+        pagination_running = _paginate(
+            ecs_client,
+            "list_tasks",
+            cluster=cluster,
+            desiredStatus="RUNNING",
+            serviceName=service_name,
+            family=family,
+            launchType=launch_type,
+        )
+
+        pagination_stopped = _paginate(
+            ecs_client,
+            "list_tasks",
+            cluster=cluster,
+            desiredStatus="STOPPED",
+            serviceName=service_name,
+            family=family,
+            launchType=launch_type,
+        )
+
+        pagination = itertools.chain(pagination_running, pagination_stopped)
+    else:
+        pagination = _paginate(
+            ecs_client,
+            "list_tasks",
+            cluster=cluster,
+            desiredStatus=status,
+            serviceName=service_name,
+            family=family,
+            launchType=launch_type,
+        )
 
     arns = []
     for iterator in pagination:
