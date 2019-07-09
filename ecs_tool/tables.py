@@ -85,12 +85,18 @@ class TasksTable(EcsTable):
 
         for task in tasks:
             status_colour = TASK_STATUS_COLOUR.get(task["lastStatus"])
-            termination_code = "(" + str(task.get("containers")[0].get("exitCode")) + ")" if "exitCode" in \
-                                                                                        task.get("containers")[
-                                                                                            0] else ""
+            termination_code = (
+                "(" + str(task.get("containers")[0].get("exitCode")) + ")"
+                if "exitCode" in task.get("containers")[0]
+                else ""
+            )
 
-            termination_reason = _wrap(task.get("stoppedReason"), 10) + " " + _wrap(
-                task.get("containers")[0].get("reason"), 10) + termination_code
+            termination_reason = (
+                _wrap(task.get("stoppedReason"), 10)
+                + " "
+                + _wrap(task.get("containers")[0].get("reason"), 10)
+                + termination_code
+            )
 
             data.append(
                 [
@@ -111,7 +117,7 @@ class TasksTable(EcsTable):
                     task.get("stoppedAt") - task.get("startedAt")
                     if all((task.get("startedAt"), task.get("stoppedAt")))
                     else "",
-                    termination_reason
+                    termination_reason,
                 ]
             )
 
