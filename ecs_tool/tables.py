@@ -108,7 +108,7 @@ class TasksTable(EcsTable):
                     if all((task.get("startedAt"), task.get("stoppedAt")))
                     else "",
                     task.get("containers")[0].get("exitCode")
-                    if task.get("containers")[0].get("exitCode")
+                    if "exitCode" in task.get("containers")[0]
                     else "",
                     _wrap(task.get("containers")[0].get("reason"), 10),
                     _wrap(task.get("stoppedReason"), 10),
