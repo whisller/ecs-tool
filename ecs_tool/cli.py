@@ -13,8 +13,9 @@ from ecs_tool.ecs import (
 )
 from ecs_tool.exceptions import (
     NoResultsException,
-    TasksCannotBeRunException,
+    TaskDefinitionInactiveException,
     WaiterException,
+    NoTaskDefinitionFoundException,
 )
 from ecs_tool.tables import ServicesTable, TasksTable, TaskDefinitionsTable
 
@@ -154,7 +155,11 @@ def run_task(
             wait_max_attempts,
             command,
         )
-    except (TasksCannotBeRunException, WaiterException) as e:
+    except (
+        TaskDefinitionInactiveException,
+        WaiterException,
+        NoTaskDefinitionFoundException,
+    ) as e:
         click.secho(str(e), fg="red")
         sys.exit(1)
 

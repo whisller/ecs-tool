@@ -8,9 +8,15 @@ class WaiterException(EcsToolException):
     """
 
 
-class TasksCannotBeRunException(EcsToolException):
+class TaskDefinitionInactiveException(EcsToolException):
     """
-    Exception used when task cannot be run.
+    Task definition is inactive, we can't run task.
+    """
+
+
+class NoTaskDefinitionFoundException(EcsToolException):
+    """
+    No task definition found.
     """
 
 

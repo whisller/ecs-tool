@@ -4,8 +4,9 @@ import botocore
 
 from ecs_tool.exceptions import (
     NoResultsException,
-    TasksCannotBeRunException,
+    TaskDefinitionInactiveException,
     WaiterException,
+    NoTaskDefinitionFoundException,
 )
 
 
@@ -123,7 +124,15 @@ def run_ecs_task(
     wait_max_attempts,
     command=None,
 ):
-    args = {"cluster": cluster, "taskDefinition": task_definition}
+    args = {"cluster": cluster}
+
+    try:
+        _, _ = task_definition.split(":")
+        args["taskDefinition"] = task_definition
+    except ValueError:
+        args["taskDefinition"] = _fetch_latest_active_task_definition(
+            ecs_client, task_definition
+        )
 
     if command:
         args["overrides"] = {
@@ -135,7 +144,7 @@ def run_ecs_task(
     try:
         result = ecs_client.run_task(**args)
     except ecs_client.exceptions.InvalidParameterException as e:
-        raise TasksCannotBeRunException(e)
+        raise TaskDefinitionInactiveException(e)
 
     if wait:
         waiter = ecs_client.get_waiter("tasks_stopped")
@@ -154,3 +163,16 @@ def run_ecs_task(
     )
 
     return describe_tasks["tasks"]
+
+
+def _fetch_latest_active_task_definition(ecs_client, name):
+    response = ecs_client.list_task_definitions(
+        familyPrefix=name, status="ACTIVE", sort="DESC", maxResults=1
+    )
+
+    if not response["taskDefinitionArns"]:
+        raise NoTaskDefinitionFoundException(
+            f'Unable to find active task definition for "{name}".'
+        )
+
+    return response["taskDefinitionArns"][0].rsplit(":", 1)[0]
