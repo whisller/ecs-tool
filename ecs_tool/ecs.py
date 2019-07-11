@@ -1,6 +1,12 @@
 import itertools
 
-from ecs_tool.exceptions import NoResultsException
+import botocore
+
+from ecs_tool.exceptions import (
+    NoResultsException,
+    TasksCannotBeRunException,
+    WaiterException,
+)
 
 
 def _paginate(ecs_client, service, **kwargs):
@@ -106,3 +112,45 @@ def fetch_task_definitions(ecs_client, family, status):
         raise NoResultsException
 
     return arns
+
+
+def run_ecs_task(
+    ecs_client,
+    cluster,
+    task_definition,
+    wait,
+    wait_delay,
+    wait_max_attempts,
+    command=None,
+):
+    args = {"cluster": cluster, "taskDefinition": task_definition}
+
+    if command:
+        args["overrides"] = {
+            "containerOverrides": [
+                {"name": task_definition.rsplit(":", 1)[0], "command": command}
+            ]
+        }
+
+    try:
+        result = ecs_client.run_task(**args)
+    except ecs_client.exceptions.InvalidParameterException as e:
+        raise TasksCannotBeRunException(e)
+
+    if wait:
+        waiter = ecs_client.get_waiter("tasks_stopped")
+
+        try:
+            waiter.wait(
+                cluster=cluster,
+                tasks=(result["tasks"][0]["taskArn"],),
+                WaiterConfig={"Delay": wait_delay, "MaxAttempts": wait_max_attempts},
+            )
+        except botocore.exceptions.WaiterError as e:
+            raise WaiterException(e)
+
+    describe_tasks = ecs_client.describe_tasks(
+        cluster=cluster, tasks=(result["tasks"][0]["taskArn"],)
+    )
+
+    return describe_tasks["tasks"]
