@@ -1,10 +1,16 @@
-class EcsToolException:
+class EcsToolException(Exception):
     pass
 
 
-class WaitParameterException(EcsToolException):
+class WaiterException(EcsToolException):
     """
-    Exception used when "describe_tasks" returns more than one task.
+    Exception used when we reached maximum number of attempts and task didn't reach STOPPED status.
+    """
+
+
+class TasksCannotBeRunException(EcsToolException):
+    """
+    Exception used when task cannot be run.
     """
 
 
