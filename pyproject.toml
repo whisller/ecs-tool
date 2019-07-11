@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ecs-tool"
-version = "0.0.4"
+version = "0.5.0"
 description = "CLI wrapper on top of \"aws ecs\" that tries to improve user experience"
 authors = ["Daniel Ancuta <whisller@gmail.com>"]
 license = "MIT"
@@ -8,7 +8,6 @@ readme = "README.md"
 homepage = "https://github.com/whisller/ecs-tool"
 repository = "https://github.com/whisller/ecs-tool"
 classifiers = [
-    "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
