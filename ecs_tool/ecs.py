@@ -7,6 +7,8 @@ from ecs_tool.exceptions import (
     TaskDefinitionInactiveException,
     WaiterException,
     NoTaskDefinitionFoundException,
+    NotSupportedLogDriver,
+    NoLogStreamsFound,
 )
 
 
@@ -43,7 +45,7 @@ def fetch_services(ecs_client, cluster, launch_type=None, scheduling_strategy=No
             arns += service["serviceArns"]
 
     if not arns:
-        raise NoResultsException
+        raise NoResultsException("No results found.")
 
     describe_services = ecs_client.describe_services(cluster=cluster, services=arns)
 
@@ -92,7 +94,7 @@ def fetch_tasks(
             arns += task["taskArns"]
 
     if not arns:
-        raise NoResultsException
+        raise NoResultsException("No results found.")
 
     describe_services = ecs_client.describe_tasks(cluster=cluster, tasks=arns)
 
@@ -110,9 +112,50 @@ def fetch_task_definitions(ecs_client, family, status):
             arns += task_definition["taskDefinitionArns"]
 
     if not arns:
-        raise NoResultsException
+        raise NoResultsException("No results found.")
 
     return arns
+
+
+def task_logs(ecs_client, logs_client, cluster, task):
+    tasks = ecs_client.describe_tasks(cluster=cluster, tasks=[task])
+
+    if not tasks["tasks"]:
+        raise NoResultsException("No results found.")
+
+    task_definition = ecs_client.describe_task_definition(
+        taskDefinition=tasks["tasks"][0]["taskDefinitionArn"]
+    )
+
+    log_configuration = task_definition["taskDefinition"]["containerDefinitions"][0][
+        "logConfiguration"
+    ]
+    if log_configuration["logDriver"] != "awslogs":
+        raise NotSupportedLogDriver(
+            f'Log driver "{log_configuration["logDriver"]}" is not supported yet.'
+        )
+
+    describe_log_streams = logs_client.describe_log_streams(
+        logGroupName=log_configuration["options"]["awslogs-group"],
+        orderBy="LastEventTime",
+        descending=True,
+        limit=1,
+    )
+
+    if not describe_log_streams["logStreams"]:
+        raise NoLogStreamsFound("No logs found.")
+
+    log_events = logs_client.get_log_events(
+        logGroupName=log_configuration["options"]["awslogs-group"],
+        logStreamName=describe_log_streams["logStreams"][0]["logStreamName"],
+        limit=100,
+        startFromHead=True,
+    )
+
+    if not log_events["events"]:
+        raise NoLogStreamsFound("No logs found.")
+
+    return log_events["events"]
 
 
 def run_ecs_task(
