@@ -146,7 +146,7 @@ def run_task(
     command: Command passed to task. Needs to be passed after "--" e.g. ecs run-task my_definition:1 -- my_script/
     """
     try:
-        result = run_ecs_task(
+        results = run_ecs_task(
             ctx.obj["ecs_client"],
             cluster,
             task_definition,
@@ -155,6 +155,11 @@ def run_task(
             wait_max_attempts,
             command,
         )
+
+        for result in results:
+            click.clear()
+            print(TasksTable.build(result).table)
+
     except (
         TaskDefinitionInactiveException,
         WaiterException,
@@ -162,8 +167,6 @@ def run_task(
     ) as e:
         click.secho(str(e), fg="red")
         sys.exit(1)
-
-    print(TasksTable.build(result).table)
 
 
 if __name__ == "__main__":

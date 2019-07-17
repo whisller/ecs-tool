@@ -146,6 +146,12 @@ def run_ecs_task(
     except ecs_client.exceptions.InvalidParameterException as e:
         raise TaskDefinitionInactiveException(e)
 
+    describe_tasks = ecs_client.describe_tasks(
+        cluster=cluster, tasks=(result["tasks"][0]["taskArn"],)
+    )
+
+    yield describe_tasks["tasks"]
+
     if wait:
         waiter = ecs_client.get_waiter("tasks_stopped")
 
@@ -162,7 +168,7 @@ def run_ecs_task(
         cluster=cluster, tasks=(result["tasks"][0]["taskArn"],)
     )
 
-    return describe_tasks["tasks"]
+    yield describe_tasks["tasks"]
 
 
 def _fetch_latest_active_task_definition(ecs_client, name):
