@@ -10,14 +10,22 @@ from ecs_tool.ecs import (
     fetch_tasks,
     fetch_task_definitions,
     run_ecs_task,
+    task_logs,
 )
 from ecs_tool.exceptions import (
     NoResultsException,
     TaskDefinitionInactiveException,
     WaiterException,
     NoTaskDefinitionFoundException,
+    NotSupportedLogDriver,
+    NoLogStreamsFound,
 )
-from ecs_tool.tables import ServicesTable, TasksTable, TaskDefinitionsTable
+from ecs_tool.tables import (
+    ServicesTable,
+    TasksTable,
+    TaskDefinitionsTable,
+    TaskLogTable,
+)
 
 
 class EcsClusterCommand(click.core.Command):
@@ -41,10 +49,12 @@ def cli(ctx):
 
     try:
         ecs_client = boto3.client("ecs")
+        logs_client = boto3.client("logs")
     except (NoRegionError, NoCredentialsError) as e:
         raise UsageError(f"AWS Configuration: {e}")
 
     ctx.obj["ecs_client"] = ecs_client
+    ctx.obj["logs_client"] = logs_client
 
 
 @cli.command(cls=EcsClusterCommand)
@@ -100,11 +110,30 @@ def tasks(ctx, cluster, status, service_name=None, family=None, launch_type=None
         result = fetch_tasks(
             ctx.obj["ecs_client"], cluster, status, service_name, family, launch_type
         )
-    except NoResultsException:
-        click.secho("No results found.", fg="red")
+    except NoResultsException as e:
+        click.secho(e, fg="red")
         sys.exit()
 
     print(TasksTable.build(result).table)
+
+
+@cli.command(cls=EcsClusterCommand)
+@click.argument("task", required=True)
+@click.pass_context
+def task_log(ctx, cluster, task):
+    """
+    Display awslogs for task.
+
+    task: Task id.
+    """
+
+    try:
+        result = task_logs(ctx.obj["ecs_client"], ctx.obj["logs_client"], cluster, task)
+    except (NoResultsException, NotSupportedLogDriver, NoLogStreamsFound) as e:
+        click.secho(e, fg="red")
+        sys.exit()
+
+    print(TaskLogTable.build(result).table)
 
 
 @cli.command()
@@ -118,8 +147,8 @@ def task_definitions(ctx, family=None, status=None):
 
     try:
         result = fetch_task_definitions(ctx.obj["ecs_client"], family, status)
-    except NoResultsException:
-        click.secho("No results found.", fg="red")
+    except NoResultsException as e:
+        click.secho(e, fg="red")
         sys.exit()
 
     print(TaskDefinitionsTable.build(result).table)

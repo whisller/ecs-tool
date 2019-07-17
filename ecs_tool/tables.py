@@ -140,6 +140,19 @@ class TaskDefinitionsTable(EcsTable):
         return cls(data)
 
 
+class TaskLogTable(EcsTable):
+    HEADER = ("Event",)
+
+    @classmethod
+    def build(cls, events):
+        data = [TaskLogTable.HEADER]
+
+        for event in events:
+            data.append([event["message"]])
+
+        return cls(data)
+
+
 def _wrap(text, size):
     if not text:
         return ""

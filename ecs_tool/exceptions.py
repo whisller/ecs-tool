@@ -24,3 +24,15 @@ class NoResultsException(EcsToolException):
     """
     Exception raised when no results found
     """
+
+
+class NotSupportedLogDriver(EcsToolException):
+    """
+    Specified log driver is not supported yet.
+    """
+
+
+class NoLogStreamsFound(EcsToolException):
+    """
+    No log streams are available for log group.
+    """
