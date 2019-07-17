@@ -27,7 +27,10 @@ class EcsTable(SingleTable):
     def __init__(self, data):
         super().__init__(data)
 
-        self.inner_row_border = True
+        self.inner_row_border = False
+        self.inner_column_border = False
+        self.outer_border = False
+        self.inner_heading_row_border = True
 
 
 class ServicesTable(EcsTable):
