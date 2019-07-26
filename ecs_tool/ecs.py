@@ -225,9 +225,7 @@ def run_ecs_task(
     yield TasksTable.build(describe_tasks["tasks"])
 
     if logs:
-        yield TaskLogTable.build(
-            task_logs(ecs_client, logs_client, cluster, result["tasks"][0]["taskArn"])
-        )
+        yield task_logs(ecs_client, logs_client, cluster, result["tasks"][0]["taskArn"])
 
 
 def _fetch_latest_active_task_definition(ecs_client, name):
