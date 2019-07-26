@@ -10,7 +10,12 @@ from ecs_tool.exceptions import (
     NotSupportedLogDriver,
     NoLogStreamsFound,
 )
-from ecs_tool.tables import TasksTable, TaskLogTable
+from ecs_tool.tables import (
+    TasksTable,
+    TaskLogTable,
+    ServicesTable,
+    TaskDefinitionsTable,
+)
 
 
 def _paginate(ecs_client, service, **kwargs):
@@ -53,7 +58,7 @@ def fetch_services(ecs_client, cluster, launch_type=None, scheduling_strategy=No
 
     describe_services = ecs_client.describe_services(cluster=cluster, services=arns)
 
-    return describe_services["services"]
+    return ServicesTable.build(describe_services["services"])
 
 
 def fetch_tasks(
@@ -102,7 +107,7 @@ def fetch_tasks(
 
     describe_services = ecs_client.describe_tasks(cluster=cluster, tasks=arns)
 
-    return describe_services["tasks"]
+    return TasksTable.build(describe_services["tasks"])
 
 
 def fetch_task_definitions(ecs_client, family, status):
@@ -118,7 +123,7 @@ def fetch_task_definitions(ecs_client, family, status):
     if not arns:
         raise NoResultsException("No results found.")
 
-    return arns
+    return TaskDefinitionsTable.build(arns)
 
 
 def task_logs(ecs_client, logs_client, cluster, task):
@@ -159,7 +164,7 @@ def task_logs(ecs_client, logs_client, cluster, task):
     if not log_events["events"]:
         raise NoLogStreamsFound("No logs found.")
 
-    return log_events["events"]
+    return TaskLogTable.build(log_events["events"])
 
 
 def run_ecs_task(
@@ -173,10 +178,6 @@ def run_ecs_task(
     logs,
     command=None,
 ):
-    #
-    # @TODO I have table build classes used in here. Should rest of it be changed to that, or this logic still should remain in cli.py?
-    #
-
     args = {"cluster": cluster}
 
     try:
