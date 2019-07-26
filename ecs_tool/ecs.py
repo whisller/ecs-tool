@@ -10,6 +10,7 @@ from ecs_tool.exceptions import (
     NotSupportedLogDriver,
     NoLogStreamsFound,
 )
+from ecs_tool.tables import TasksTable, TaskLogTable
 
 
 def _paginate(ecs_client, service, **kwargs):
@@ -160,13 +161,19 @@ def task_logs(ecs_client, logs_client, cluster, task):
 
 def run_ecs_task(
     ecs_client,
+    logs_client,
     cluster,
     task_definition,
     wait,
     wait_delay,
     wait_max_attempts,
+    logs,
     command=None,
 ):
+    #
+    # @TODO I have table build classes used in here. Should rest of it be changed to that, or this logic still should remain in cli.py?
+    #
+
     args = {"cluster": cluster}
 
     try:
@@ -193,7 +200,7 @@ def run_ecs_task(
         cluster=cluster, tasks=(result["tasks"][0]["taskArn"],)
     )
 
-    yield describe_tasks["tasks"]
+    yield TasksTable.build(describe_tasks["tasks"])
 
     if wait:
         waiter = ecs_client.get_waiter("tasks_stopped")
@@ -211,7 +218,12 @@ def run_ecs_task(
         cluster=cluster, tasks=(result["tasks"][0]["taskArn"],)
     )
 
-    yield describe_tasks["tasks"]
+    yield TasksTable.build(describe_tasks["tasks"])
+
+    if logs:
+        yield TaskLogTable.build(
+            task_logs(ecs_client, logs_client, cluster, result["tasks"][0]["taskArn"])
+        )
 
 
 def _fetch_latest_active_task_definition(ecs_client, name):

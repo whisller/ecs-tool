@@ -162,11 +162,19 @@ def task_definitions(ctx, family=None, status=None):
     default=100,
     help="Maximum attempts to check if task finished.",
 )
+@click.option("--logs", is_flag=True, help="Display logs from task after execution.")
 @click.argument("task-definition", required=True)
 @click.argument("command", nargs=-1)
 @click.pass_context
 def run_task(
-    ctx, cluster, wait, wait_delay, wait_max_attempts, task_definition, command=None
+    ctx,
+    cluster,
+    wait,
+    wait_delay,
+    wait_max_attempts,
+    logs,
+    task_definition,
+    command=None,
 ):
     """
     Run task.
@@ -177,17 +185,19 @@ def run_task(
     try:
         results = run_ecs_task(
             ctx.obj["ecs_client"],
+            ctx.obj["logs_client"],
             cluster,
             task_definition,
             wait,
             wait_delay,
             wait_max_attempts,
+            logs,
             command,
         )
 
         for result in results:
-            click.clear()
-            print(TasksTable.build(result).table)
+            print(result.table)
+            click.echo("\n")
 
     except (
         TaskDefinitionInactiveException,
