@@ -3,7 +3,7 @@ import sys
 import boto3
 import click
 from botocore.exceptions import NoRegionError, NoCredentialsError
-from click import UsageError
+from click import UsageError, ClickException
 
 from ecs_tool.ecs import (
     fetch_services,
@@ -80,9 +80,8 @@ def services(ctx, cluster, launch_type=None, scheduling_strategy=None):
         result = fetch_services(
             ctx.obj["ecs_client"], cluster, launch_type, scheduling_strategy
         )
-    except NoResultsException:
-        click.secho("No results found.", fg="red")
-        sys.exit()
+    except NoResultsException as e:
+        raise ClickException(e)
 
     print(ServicesTable.build(result).table)
 
@@ -111,8 +110,7 @@ def tasks(ctx, cluster, status, service_name=None, family=None, launch_type=None
             ctx.obj["ecs_client"], cluster, status, service_name, family, launch_type
         )
     except NoResultsException as e:
-        click.secho(e, fg="red")
-        sys.exit()
+        raise ClickException(e)
 
     print(TasksTable.build(result).table)
 
@@ -130,8 +128,7 @@ def task_log(ctx, cluster, task):
     try:
         result = task_logs(ctx.obj["ecs_client"], ctx.obj["logs_client"], cluster, task)
     except (NoResultsException, NotSupportedLogDriver, NoLogStreamsFound) as e:
-        click.secho(e, fg="red")
-        sys.exit()
+        raise ClickException(e)
 
     print(TaskLogTable.build(result).table)
 
@@ -148,8 +145,7 @@ def task_definitions(ctx, family=None, status=None):
     try:
         result = fetch_task_definitions(ctx.obj["ecs_client"], family, status)
     except NoResultsException as e:
-        click.secho(e, fg="red")
-        sys.exit()
+        raise ClickException(e)
 
     print(TaskDefinitionsTable.build(result).table)
 
@@ -204,8 +200,7 @@ def run_task(
         WaiterException,
         NoTaskDefinitionFoundException,
     ) as e:
-        click.secho(str(e), fg="red")
-        sys.exit(1)
+        raise ClickException(e)
 
 
 if __name__ == "__main__":

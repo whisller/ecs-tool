@@ -41,9 +41,12 @@ def fetch_services(ecs_client, cluster, launch_type=None, scheduling_strategy=No
     )
 
     arns = []
-    for iterator in pagination:
-        for service in iterator:
-            arns += service["serviceArns"]
+    try:
+        for iterator in pagination:
+            for service in iterator:
+                arns += service["serviceArns"]
+    except ecs_client.exceptions.ClusterNotFoundException:
+        raise NoResultsException("No results found.")
 
     if not arns:
         raise NoResultsException("No results found.")
