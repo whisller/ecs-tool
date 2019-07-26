@@ -18,12 +18,6 @@ from ecs_tool.exceptions import (
     NotSupportedLogDriver,
     NoLogStreamsFound,
 )
-from ecs_tool.tables import (
-    ServicesTable,
-    TasksTable,
-    TaskDefinitionsTable,
-    TaskLogTable,
-)
 
 
 class EcsClusterCommand(click.core.Command):
@@ -81,7 +75,7 @@ def services(ctx, cluster, launch_type=None, scheduling_strategy=None):
     except NoResultsException as e:
         raise ClickException(e)
 
-    print(ServicesTable.build(result).table)
+    print(result.table)
 
 
 @cli.command(cls=EcsClusterCommand)
@@ -110,7 +104,7 @@ def tasks(ctx, cluster, status, service_name=None, family=None, launch_type=None
     except NoResultsException as e:
         raise ClickException(e)
 
-    print(TasksTable.build(result).table)
+    print(result.table)
 
 
 @cli.command(cls=EcsClusterCommand)
@@ -128,7 +122,7 @@ def task_log(ctx, cluster, task):
     except (NoResultsException, NotSupportedLogDriver, NoLogStreamsFound) as e:
         raise ClickException(e)
 
-    print(TaskLogTable.build(result).table)
+    print(result.table)
 
 
 @cli.command()
@@ -145,7 +139,7 @@ def task_definitions(ctx, family=None, status=None):
     except NoResultsException as e:
         raise ClickException(e)
 
-    print(TaskDefinitionsTable.build(result).table)
+    print(result.table)
 
 
 @cli.command(cls=EcsClusterCommand)
