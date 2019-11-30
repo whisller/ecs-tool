@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ecs-tool"
-version = "0.9.0"
+version = "0.9.1"
 description = "CLI wrapper on top of \"aws ecs\" that tries to improve user experience"
 authors = ["Daniel Ancuta <whisller@gmail.com>"]
 license = "MIT"

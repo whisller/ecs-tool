@@ -25,3 +25,19 @@ You can run task definition, here either it will automatically select latest ver
 There is an option to wait for results of this execution.
 
 `ecs-tool` is grep friendly.
+
+## Usage
+```
+$ ecs
+  Usage: ecs [OPTIONS] COMMAND [ARGS]...
+  
+  Options:
+    --help  Show this message and exit.
+  
+  Commands:
+    run-task          Run task.
+    services          List of services.
+    task-definitions  List of task definitions.
+    task-log          Display awslogs for task.
+    tasks             List of tasks.
+```
