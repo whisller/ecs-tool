@@ -1,8 +1,9 @@
 import boto3
 import click
-from botocore.exceptions import NoRegionError, NoCredentialsError
-from click import UsageError, ClickException
+from botocore.exceptions import NoRegionError, NoCredentialsError, BotoCoreError
+from click import UsageError, ClickException, Abort
 
+from ecs_tool import logger
 from ecs_tool.ecs import (
     fetch_services,
     fetch_tasks,
@@ -33,17 +34,21 @@ class EcsClusterCommand(click.core.Command):
             ),
         )
 
+    def invoke(self, ctx):
+        try:
+            return super().invoke(ctx)
+        except BotoCoreError as e:
+            logger.error(f"[boto] {e}")
+            raise Abort()
+
 
 @click.group()
 @click.pass_context
 def cli(ctx):
     ctx.obj = {}
 
-    try:
-        ecs_client = boto3.client("ecs")
-        logs_client = boto3.client("logs")
-    except (NoRegionError, NoCredentialsError) as e:
-        raise UsageError(f"AWS Configuration: {e}")
+    ecs_client = boto3.client("ecs")
+    logs_client = boto3.client("logs")
 
     ctx.obj["ecs_client"] = ecs_client
     ctx.obj["logs_client"] = logs_client
