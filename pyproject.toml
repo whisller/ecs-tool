@@ -27,7 +27,7 @@ terminaltables = "^3.1"
 colorclass = "^2.2"
 
 [tool.poetry.dev-dependencies]
-black = "=19.3b0"
+black = "^20.8b1"
 
 [tool.poetry.scripts]
 ecs = "ecs_tool.cli:cli"
