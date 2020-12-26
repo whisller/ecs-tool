@@ -47,8 +47,11 @@ class EcsClusterCommand(click.core.Command):
 def cli(ctx):
     ctx.obj = {}
 
-    ecs_client = boto3.client("ecs")
-    logs_client = boto3.client("logs")
+    try:
+        ecs_client = boto3.client("ecs")
+        logs_client = boto3.client("logs")
+    except (NoRegionError, NoCredentialsError) as e:
+        raise UsageError(f"AWS Configuration: {e}")
 
     ctx.obj["ecs_client"] = ecs_client
     ctx.obj["logs_client"] = logs_client
