@@ -34,7 +34,7 @@ black = "^21.6b0"
 bump2version = "^1.0.1"
 
 [tool.poetry.scripts]
-ecs = "ecs_tool.cli:cli"
+ecs = "new_ecs_tool.cli:cli"
 
 [build-system]
 requires = ["poetry>=0.12"]
