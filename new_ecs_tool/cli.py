@@ -1,7 +1,7 @@
 import click
 
 from new_ecs_tool.context import ContextObject
-from .plugins import cluster, service, task
+from .plugins import cluster, dashboard, service, task
 
 
 @click.group()
@@ -11,6 +11,7 @@ def cli(ctx):
 
 
 cli.add_command(cluster.cli)
+cli.add_command(dashboard.cli)
 cli.add_command(service.cli)
 cli.add_command(task.cli)
 

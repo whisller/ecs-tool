@@ -1,6 +1,6 @@
 import click
 
-from .commands import service_list
+from .commands import listing, dashboard
 
 
 @click.group(name="service")
@@ -11,4 +11,5 @@ def cli(ctx):
     """
 
 
-cli.add_command(service_list)
+cli.add_command(listing)
+cli.add_command(dashboard)
