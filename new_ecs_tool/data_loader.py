@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from .context import ContextObject
+
 
 @dataclass
 class Data:
@@ -8,11 +10,13 @@ class Data:
 
 
 class DataLoader:
-    def __init__(self, click_params, data_fetcher, *args):
+    def __init__(self, context: ContextObject, click_params, data_fetcher):
+        self.context = context
         self.click_params = click_params
         self.data_fetcher = data_fetcher
-        self.args = args
         self.data = self.load()
 
     def load(self):
-        return Data(self.click_params, self.data_fetcher(click_params=self.click_params, *self.args))
+        return Data(
+            self.click_params, self.data_fetcher(self.context, self.click_params)
+        )
