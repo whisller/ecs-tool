@@ -11,12 +11,9 @@ from ...ui import Ui, make_layout, make_dashboard_layout
 @click.option("--cluster", default="main")
 @click.pass_context
 def listing(ctx, **kwargs):
-    ui = Ui(
-        make_layout, ListingLayout, DataLoader(ctx.obj, kwargs, fetch_listing)
-    )
-
-    runner = Runner(ui)
-    runner.run()
+    Runner(
+        Ui(make_layout, ListingLayout, DataLoader(ctx.obj, kwargs, fetch_listing))
+    ).run()
 
 
 @click.command(help="Dashboard")
@@ -24,9 +21,10 @@ def listing(ctx, **kwargs):
 @click.option("--cluster", default="main")
 @click.pass_context
 def dashboard(ctx, **kwargs):
-    ui = Ui(
-        make_dashboard_layout, DashboardLayout, DataLoader(ctx.obj, kwargs, fetch_dashboard)
-    )
-
-    runner = LiveRunner(ui)
-    runner.run()
+    LiveRunner(
+        Ui(
+            make_dashboard_layout,
+            DashboardLayout,
+            DataLoader(ctx.obj, kwargs, fetch_dashboard),
+        )
+    ).run()
