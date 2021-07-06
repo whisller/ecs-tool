@@ -1,16 +1,22 @@
 import click
 
-from .data import fetch_service_dashboard
-from .layouts import ServiceDashboardLayout
-from ... import logger
+from .data import fetch_dashboard, fetch_listing
+from .layouts import DashboardLayout, ListingLayout
 from ...data_loader import DataLoader
-from ...runner import Runner
-from ...ui import Ui
+from ...runner import LiveRunner, Runner
+from ...ui import Ui, make_layout, make_dashboard_layout
 
 
 @click.command(help="List available services")
-def listing():
-    logger.info(__name__)
+@click.option("--cluster", default="main")
+@click.pass_context
+def listing(ctx, **kwargs):
+    ui = Ui(
+        make_layout, ListingLayout, DataLoader(ctx.obj, kwargs, fetch_listing)
+    )
+
+    runner = Runner(ui)
+    runner.run()
 
 
 @click.command(help="Dashboard")
@@ -19,8 +25,8 @@ def listing():
 @click.pass_context
 def dashboard(ctx, **kwargs):
     ui = Ui(
-        ServiceDashboardLayout, DataLoader(ctx.obj, kwargs, fetch_service_dashboard)
+        make_dashboard_layout, DashboardLayout, DataLoader(ctx.obj, kwargs, fetch_dashboard)
     )
 
-    runner = Runner(ui)
+    runner = LiveRunner(ui)
     runner.run()

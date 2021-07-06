@@ -10,6 +10,10 @@ from rich.panel import Panel
 
 
 def make_layout():
+    return Layout(name="main", ratio=1)
+
+
+def make_dashboard_layout():
     layout = Layout(name="root")
     layout.split(
         Layout(name="header", size=3),
@@ -20,18 +24,18 @@ def make_layout():
 
 
 class Ui:
-    def __init__(self, layout, data_loader):
+    def __init__(self, base_layout, layout, data_loader):
+        self.base_layout = base_layout
         self.layout = layout
         self.data_loader = data_loader
 
     def refresh(self):
-        return self.layout(make_layout()).load(self.data_loader.load())
+        return self.layout(self.base_layout()).load(self.data_loader.load())
 
 
 class EcsPanel(Panel):
     def __init__(self, *args, **kwargs):
         kwargs["style"] = "white on black"
-
         super().__init__(*args, **kwargs)
 
 

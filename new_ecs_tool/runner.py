@@ -1,9 +1,19 @@
 from time import sleep
 
+from rich.console import Console
 from rich.live import Live
 
 
 class Runner:
+    def __init__(self, ui):
+        self.ui = ui
+
+    def run(self):
+        console = Console()
+        console.print(self.ui.refresh())
+
+
+class LiveRunner:
     def __init__(self, ui):
         self.ui = ui
 

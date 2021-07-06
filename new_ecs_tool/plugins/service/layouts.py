@@ -1,16 +1,9 @@
-from dataclasses import dataclass
 from enum import Enum, unique
 
 import arrow
 from rich.layout import Layout
 from rich.table import Table
 from new_ecs_tool.ui import AsciiPlotIntegration, EcsPanel, StatusEnum
-
-
-@dataclass
-class StatusStyle:
-    colour: str
-    icon: str
 
 
 @unique
@@ -31,7 +24,7 @@ class TaskLifecycleStatusEnum(Enum):
     STOPPED = StatusEnum.STOPPED.value
 
 
-class ServiceDashboardLayout:
+class DashboardLayout:
     def __init__(self, base_layout):
         self.base_layout = base_layout
         self.data = None
@@ -149,5 +142,30 @@ class ServiceDashboardLayout:
         self.base_layout["main_right_top_cpu"].update(self.cpu())
 
         self.base_layout["main_right_bottom"].update(self.logs())
+
+        return self.base_layout
+
+
+class ListingLayout:
+    def __init__(self, base_layout):
+        self.base_layout = base_layout
+        self.data = None
+
+    def main(self):
+        table = Table(title="Star Wars Movies")
+
+        table.add_column("Released", style="cyan", no_wrap=True)
+        table.add_column("Title", style="magenta")
+        table.add_column("Box Office", justify="right", style="green")
+
+        table.add_row("Dec 20, 2019", "Star Wars: The Rise of Skywalker", "$952,110,690")
+        table.add_row("May 25, 2018", "Solo: A Star Wars Story", "$393,151,347")
+        table.add_row("Dec 15, 2017", "Star Wars Ep. V111: The Last Jedi", "$1,332,539,889")
+        table.add_row("Dec 16, 2016", "Rogue One: A Star Wars Story", "$1,332,439,889")
+
+        return table
+
+    def load(self, data):
+        self.base_layout["main"].update(self.main())
 
         return self.base_layout

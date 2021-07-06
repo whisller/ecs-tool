@@ -20,7 +20,11 @@ def _fetch_cloudwatch(cloudwatch, metrics_name, cluster_name, service_name):
     return list(sorted(data["Datapoints"], key=lambda v: v["Timestamp"]))
 
 
-def fetch_service_dashboard(context: ContextObject, click_params):
+def fetch_listing(context: ContextObject, click_params):
+    pass
+
+
+def fetch_dashboard(context: ContextObject, click_params):
     services = context.ecs.describe_services(
         cluster=click_params["cluster"], services=[click_params["service"]]
     )
