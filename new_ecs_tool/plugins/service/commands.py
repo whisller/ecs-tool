@@ -4,7 +4,7 @@ from .data import fetch_dashboard, fetch_listing
 from .layouts import DashboardLayout, ListingLayout
 from ...data_loader import DataLoader
 from ...runner import LiveRunner, Runner
-from ...ui import Ui, make_layout, make_dashboard_layout
+from ...ui import Ui, make_layout
 
 
 @click.command(help="List available services")
@@ -23,7 +23,7 @@ def listing(ctx, **kwargs):
 def dashboard(ctx, **kwargs):
     LiveRunner(
         Ui(
-            make_dashboard_layout,
+            make_layout,
             DashboardLayout,
             DataLoader(ctx.obj, kwargs, fetch_dashboard),
         )

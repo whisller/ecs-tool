@@ -10,10 +10,6 @@ from rich.panel import Panel
 
 
 def make_layout():
-    return Layout(name="main", ratio=1)
-
-
-def make_dashboard_layout():
     layout = Layout(name="root")
     layout.split(
         Layout(name="header", size=3),

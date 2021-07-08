@@ -1,4 +1,5 @@
 import click
+from rich.console import Console
 
 from new_ecs_tool.context import ContextObject
 from .plugins import cluster, dashboard, service, task
@@ -8,6 +9,20 @@ from .plugins import cluster, dashboard, service, task
 @click.pass_context
 def cli(ctx):
     ctx.obj = ContextObject()
+
+
+def safe_cli():
+    try:
+        cli()
+    except Exception as e:
+        console = Console()
+
+        if type(e).__qualname__ == "ClusterNotFoundException":
+            # Handle botocore.errorfactory.ClusterNotFoundException exception
+            console.print("Cluster not found. Make sure that its name is correct.", style="bold red")
+            return
+
+        raise
 
 
 cli.add_command(cluster.cli)

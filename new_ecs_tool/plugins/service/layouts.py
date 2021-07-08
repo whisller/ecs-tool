@@ -116,6 +116,8 @@ class DashboardLayout:
 
     def load(self, data):
         self.data = data
+        self.base_layout["header"].update(self.header())
+
         self.base_layout["main"].split_row(
             Layout(name="main_left"),
             Layout(name="main_right", ratio=2, minimum_size=60),
@@ -133,8 +135,6 @@ class DashboardLayout:
             Layout(name="main_right_top_memory"),
         )
 
-        self.base_layout["header"].update(self.header())
-
         self.base_layout["main_left_basic_info"].update(self.basic_info())
         self.base_layout["main_left_tasks"].update(self.tasks())
 
@@ -151,21 +151,39 @@ class ListingLayout:
         self.base_layout = base_layout
         self.data = None
 
+    def header(self):
+        grid = Table.grid(expand=True)
+        grid.add_column(justify="left", ratio=1)
+        grid.add_row(f"Clusters > {self.data.click_params['cluster']} > Services")
+
+        return EcsPanel(grid)
+
     def main(self):
-        table = Table(title="Star Wars Movies")
+        table = Table()
 
-        table.add_column("Released", style="cyan", no_wrap=True)
-        table.add_column("Title", style="magenta")
-        table.add_column("Box Office", justify="right", style="green")
+        table.add_column("Service name")
+        table.add_column("Task definition")
+        table.add_column("Status")
+        table.add_column("Tasks")
+        table.add_column("Service type")
+        table.add_column("Launch type")
 
-        table.add_row("Dec 20, 2019", "Star Wars: The Rise of Skywalker", "$952,110,690")
-        table.add_row("May 25, 2018", "Solo: A Star Wars Story", "$393,151,347")
-        table.add_row("Dec 15, 2017", "Star Wars Ep. V111: The Last Jedi", "$1,332,539,889")
-        table.add_row("Dec 16, 2016", "Rogue One: A Star Wars Story", "$1,332,439,889")
+        for service in self.data.fetcher:
+            status = ServiceStatusEnum[service["status"]].value
+            table.add_row(
+                service["serviceName"],
+                service["taskDefinition"].rsplit("task-definition/", 1)[-1],
+                f"[{status.colour}]{status.icon}[/{status.colour}]  ({service['status'].lower()})",
+                f"{service['runningCount']}/{service['desiredCount']} ({service['pendingCount']} pending)",
+                service["schedulingStrategy"],
+                service["launchType"],
+            )
 
         return table
 
     def load(self, data):
+        self.data = data
+        self.base_layout["header"].update(self.header())
         self.base_layout["main"].update(self.main())
 
         return self.base_layout
