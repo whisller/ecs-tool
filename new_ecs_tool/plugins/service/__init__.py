@@ -4,8 +4,7 @@ from .commands import listing, dashboard
 
 
 @click.group(name="service")
-@click.pass_context
-def cli(ctx):
+def cli():
     """
     Service related commands
     """

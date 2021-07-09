@@ -1,14 +1,13 @@
 import click
 
-from .commands import cluster_list
+from .commands import listing
 
 
 @click.group(name="cluster")
-@click.pass_context
-def cli(ctx):
+def cli():
     """
     Cluster related commands
     """
 
 
-cli.add_command(cluster_list)
+cli.add_command(listing)

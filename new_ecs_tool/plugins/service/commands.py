@@ -7,12 +7,12 @@ from ...runner import LiveRunner, Runner
 from ...ui import Ui, make_layout
 
 
-@click.command(help="List available services")
+@click.command(help="List available services", name="list")
 @click.option("--cluster", default="main")
 @click.pass_context
 def listing(ctx, **kwargs):
     Runner(
-        Ui(make_layout, ListingLayout, DataLoader(ctx.obj, kwargs, fetch_listing))
+        Ui(make_layout, ListingLayout, DataLoader(ctx.obj, fetch_listing, kwargs))
     ).run()
 
 
@@ -25,6 +25,6 @@ def dashboard(ctx, **kwargs):
         Ui(
             make_layout,
             DashboardLayout,
-            DataLoader(ctx.obj, kwargs, fetch_dashboard),
+            DataLoader(ctx.obj, fetch_dashboard, kwargs),
         )
     ).run()

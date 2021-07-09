@@ -12,6 +12,10 @@ def cli(ctx):
 
 
 def safe_cli():
+    """
+    Used as an entry point in pyproject.toml::tool.poetry.scripts
+    To handle global exceptions.
+    """
     try:
         cli()
     except Exception as e:
@@ -19,7 +23,10 @@ def safe_cli():
 
         if type(e).__qualname__ == "ClusterNotFoundException":
             # Handle botocore.errorfactory.ClusterNotFoundException exception
-            console.print("Cluster not found. Make sure that its name is correct.", style="bold red")
+            console.print(
+                "Cluster not found. Make sure that its name is correct.",
+                style="bold red",
+            )
             return
 
         raise

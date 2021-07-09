@@ -1,7 +1,8 @@
 import arrow
 
 from new_ecs_tool.context import ContextObject
-from new_ecs_tool.utils import _paginate, grouper
+from new_ecs_tool.utils import _paginate
+from new_ecs_tool.data_loader import fetch_listing as base_fetch_listing
 
 
 def _fetch_cloudwatch(cloudwatch, metrics_name, cluster_name, service_name):
@@ -21,25 +22,15 @@ def _fetch_cloudwatch(cloudwatch, metrics_name, cluster_name, service_name):
 
 
 def fetch_listing(context: ContextObject, click_params):
-    services_pagination = _paginate(
+    return base_fetch_listing(
         context.ecs,
-        "list_services",
-        cluster=click_params["cluster"],
+        paginator_type="list_services",
+        arn_index="serviceArns",
+        describe_function=context.ecs.describe_services,
+        describe_filter="services",
+        result_key="services",
+        paginator_params={"cluster": click_params["cluster"]},
     )
-
-    arns = []
-    for iterator in services_pagination:
-        for task in iterator:
-            arns.extend(task["serviceArns"])
-
-    services = []
-    for chunk in grouper(arns, 10):
-        described_services = context.ecs.describe_services(
-            cluster=click_params["cluster"], services=list(filter(None, chunk))
-        )["services"]
-        services.extend(described_services)
-
-    return services
 
 
 def fetch_dashboard(context: ContextObject, click_params):
