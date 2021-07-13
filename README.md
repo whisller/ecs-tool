@@ -13,10 +13,29 @@ It is in early stage of development though.
 ## Some screenshots
 [ecs services](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-services-1.png) | [ecs tasks](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-tasks-1.png) | [ecs task-definitions](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-task-definitions-1.png) | [ecs task-log](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-task-log-1.png)
 
-## Installation
-```sh
+## Installation & usage
+
+### As python package
+```shell
 pip install ecs-tool
+
+ecs
+
+# with aws-vault
+aws-vault exec my-aws-profile -- ecs 
 ```
+
+### With docker
+```shell
+# build image
+docker build -t ecs-tool
+
+docker run -it --rm --name ecs-tool ecs-tool ecs
+
+# with aws-vault
+docker run -it --rm --env-file <(aws-vault exec my-aws-profile -- env | grep "^AWS_") --name ecs-tool ecs-tool ecs
+```
+
 
 ## What `ecs-tool` can do?
 List services, tasks, task definitions and logs for those tasks. All of those can be filtered by several attributes.
