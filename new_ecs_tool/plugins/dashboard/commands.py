@@ -1,6 +1,6 @@
 import click
 
-from new_ecs_tool import logger
+from ... import logger
 
 
 @click.command(help="Starts dashboard")

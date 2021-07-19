@@ -1,5 +1,5 @@
-from new_ecs_tool.context import ContextObject
-from new_ecs_tool.data_loader import fetch_listing as base_fetch_listing
+from ...context import ContextObject
+from ...data_loader import fetch_listing as base_fetch_listing
 
 
 def fetch_listing(context: ContextObject, click_params):

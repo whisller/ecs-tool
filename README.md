@@ -7,9 +7,6 @@ ecs-tool tries to eliminate common caveats for your day-to-day work with Elastic
 
 Dashboards with important information about your services, more intuitive CLI interface and more.
 
-## Some screenshots
-[ecs services](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-services-1.png) | [ecs tasks](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-tasks-1.png) | [ecs task-definitions](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-task-definitions-1.png) | [ecs task-log](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-task-log-1.png)
-
 ## Installation & usage
 
 ### As python package

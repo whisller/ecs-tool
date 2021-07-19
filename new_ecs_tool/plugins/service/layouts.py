@@ -3,7 +3,7 @@ from enum import Enum, unique
 import arrow
 from rich.layout import Layout
 from rich.table import Table
-from new_ecs_tool.ui import AsciiPlotIntegration, EcsPanel, StatusEnum
+from ...ui import AsciiPlotIntegration, EcsPanel, StatusEnum
 
 
 @unique

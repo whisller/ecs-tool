@@ -1,8 +1,8 @@
 import arrow
 
-from new_ecs_tool.context import ContextObject
-from new_ecs_tool.utils import _paginate
-from new_ecs_tool.data_loader import fetch_listing as base_fetch_listing
+from ...context import ContextObject
+from ...utils import _paginate
+from ...data_loader import fetch_listing as base_fetch_listing
 
 
 def _fetch_cloudwatch(cloudwatch, metrics_name, cluster_name, service_name):

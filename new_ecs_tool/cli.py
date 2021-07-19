@@ -1,7 +1,7 @@
 import click
 from rich.console import Console
 
-from new_ecs_tool.context import ContextObject
+from .context import ContextObject
 from .plugins import cluster, dashboard, service, task
 
 

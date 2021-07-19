@@ -2,7 +2,7 @@ from enum import Enum
 
 from rich.table import Table
 
-from new_ecs_tool.ui import EcsPanel, StatusEnum
+from ...ui import EcsPanel, StatusEnum
 
 
 class ClusterStatusEnum(Enum):
