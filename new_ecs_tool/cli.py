@@ -24,7 +24,7 @@ def safe_cli():
         if type(e).__qualname__ == "ClusterNotFoundException":
             # Handle botocore.errorfactory.ClusterNotFoundException exception
             console.print(
-                "Cluster not found. Make sure that its name is correct.",
+                "Cluster not found. To list available clusters run: ecs cluster list",
                 style="bold red",
             )
             return
