@@ -31,9 +31,39 @@ docker run -it --rm --env-file <(aws-vault exec my-aws-profile -- env | grep "^A
 ```
 
 ## What `ecs-tool` can do?
-List services, tasks, task definitions and logs for those tasks. All of those can be filtered by several attributes.
 
-You can run task definition, here either it will automatically select latest version or you can specify number manually. 
-There is an option to wait for results of this execution.
+### List of available clusters
+```shell
+ecs cluster list
+```
 
-`ecs-tool` is grep friendly.
+### List of available services
+```shell
+ecs service list [OPTIONS]
+
+Options:
+  --cluster TEXT
+```
+
+### Dashboard for service
+```shell
+ecs service dashboard [OPTIONS] SERVICE
+
+Options:
+  --cluster TEXT
+```
+
+### Run task
+
+```shell
+ecs task run [OPTIONS] TASK_DEFINITION [COMMAND]...
+
+Options:
+  --cluster TEXT
+  --wait                       Wait till task will reach STOPPED status.
+  --wait-delay INTEGER         Delay between task status check.
+  --wait-max-attempts INTEGER  Maximum attempts to check if task finished.
+```
+
+## Can I use grep?
+Yes! All commands (but dashboards) can be filtered with `grep`

@@ -16,7 +16,7 @@ def listing(ctx, **kwargs):
     ).run()
 
 
-@click.command(help="Dashboard")
+@click.command(help="Dashboard of service")
 @click.argument("service")
 @click.option("--cluster", default="main")
 @click.pass_context
