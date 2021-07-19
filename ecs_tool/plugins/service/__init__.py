@@ -6,7 +6,7 @@ from .commands import listing, dashboard
 @click.group(name="service")
 def cli():
     """
-    Service related commands
+    Service [listing, dashboard]
     """
 
 

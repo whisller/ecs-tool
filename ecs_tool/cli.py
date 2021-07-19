@@ -2,7 +2,7 @@ import click
 from rich.console import Console
 
 from .context import ContextObject
-from .plugins import cluster, dashboard, service, task
+from .plugins import cluster, service, task
 
 
 @click.group()
@@ -28,12 +28,18 @@ def safe_cli():
                 style="bold red",
             )
             return
+        if type(e).__qualname__ == "ServiceNotFoundException":
+            # handle botocore.errorfactory.ServiceNotFoundException
+            console.print(
+                "Service not found in this cluster. To list available services run: ecs service list",
+                style="bold red",
+            )
+            return
 
         raise
 
 
 cli.add_command(cluster.cli)
-cli.add_command(dashboard.cli)
 cli.add_command(service.cli)
 cli.add_command(task.cli)
 

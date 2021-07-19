@@ -6,7 +6,7 @@ from .commands import listing
 @click.group(name="cluster")
 def cli():
     """
-    Cluster related commands
+    Cluster [listing]
     """
 
 

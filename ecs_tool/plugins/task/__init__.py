@@ -1,14 +1,14 @@
 import click
 
-from .commands import task_list
+from .commands import run
 
 
 @click.group(name="task")
 @click.pass_context
 def cli(ctx):
     """
-    Task related commands
+    Task [run]
     """
 
 
-cli.add_command(task_list)
+cli.add_command(run)
