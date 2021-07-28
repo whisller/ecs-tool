@@ -1,8 +1,8 @@
 import arrow
 
 from ...context import ContextObject
-from ...utils import _paginate
 from ...data_loader import fetch_listing as base_fetch_listing
+from ...utils import _paginate
 
 
 def _fetch_cloudwatch(cloudwatch, metrics_name, cluster_name, service_name):
@@ -34,9 +34,7 @@ def fetch_listing(context: ContextObject, click_params):
 
 
 def fetch_dashboard(context: ContextObject, click_params):
-    services = context.ecs.describe_services(
-        cluster=click_params["cluster"], services=[click_params["service"]]
-    )
+    services = context.ecs.describe_services(cluster=click_params["cluster"], services=[click_params["service"]])
 
     tasks_pagination = _paginate(
         context.ecs,
@@ -50,9 +48,7 @@ def fetch_dashboard(context: ContextObject, click_params):
     for iterator in tasks_pagination:
         for task in iterator:
             arns += task["taskArns"]
-    described_tasks = context.ecs.describe_tasks(
-        cluster=click_params["cluster"], tasks=arns
-    )
+    described_tasks = context.ecs.describe_tasks(cluster=click_params["cluster"], tasks=arns)
 
     cloudwatch_memory_data = _fetch_cloudwatch(
         context.cloudwatch,
@@ -71,9 +67,7 @@ def fetch_dashboard(context: ContextObject, click_params):
         taskDefinition=described_tasks["tasks"][0]["taskDefinitionArn"]
     )
 
-    log_configuration = task_definition["taskDefinition"]["containerDefinitions"][0][
-        "logConfiguration"
-    ]
+    log_configuration = task_definition["taskDefinition"]["containerDefinitions"][0]["logConfiguration"]
     describe_log_streams = context.logs.describe_log_streams(
         logGroupName=log_configuration["options"]["awslogs-group"],
         orderBy="LastEventTime",

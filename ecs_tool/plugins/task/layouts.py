@@ -2,8 +2,8 @@ import arrow
 from rich.layout import Layout
 from rich.table import Table
 
-from ecs_tool import DATE_FORMAT
-from ecs_tool.ui import EcsPanel
+from ... import DATE_FORMAT
+from ...ui import EcsPanel
 
 
 class RunLayout:

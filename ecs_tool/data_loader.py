@@ -17,9 +17,7 @@ class DataLoader:
         self.click_params = click_params
 
     def fetch_data(self):
-        return Data(
-            self.click_params, self.data_fetcher(self.context, self.click_params)
-        )
+        return Data(self.click_params, self.data_fetcher(self.context, self.click_params))
 
 
 def fetch_listing(

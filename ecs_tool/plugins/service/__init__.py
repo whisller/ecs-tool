@@ -1,6 +1,6 @@
 import click
 
-from .commands import listing, dashboard
+from .commands import dashboard, listing
 
 
 @click.group(name="service")

@@ -69,13 +69,9 @@ class DashboardLayout:
                     deployment_active = arrow.get(deployment["createdAt"])
 
             if not deployment_active:
-                deployment_status = (
-                    f"Completed at {deployment_primary.format(DATE_FORMAT)}"
-                )
+                deployment_status = f"Completed at {deployment_primary.format(DATE_FORMAT)}"
             else:
-                deployment_status = (
-                    f"Running from {deployment_active.format(DATE_FORMAT)}"
-                )
+                deployment_status = f"Running from {deployment_active.format(DATE_FORMAT)}"
 
             grid.add_row("Deployment: ", deployment_status)
 

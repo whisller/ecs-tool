@@ -1,10 +1,10 @@
 import click
 
-from .data import fetch_run_task
-from .layouts import RunLayout
 from ...data_loader import DataLoader
 from ...runner import LiveRunner
 from ...ui import Ui, make_layout
+from .data import fetch_run_task
+from .layouts import RunLayout
 
 
 @click.command(help="Run task")
