@@ -27,6 +27,7 @@ rich = "^10.3.0"
 click-log = "^0.3.2"
 loguru = "^0.5.3"
 arrow = "^1.1.0"
+asciiplot = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.6b0"

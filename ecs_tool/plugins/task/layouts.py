@@ -3,7 +3,7 @@ from rich.layout import Layout
 from rich.table import Table
 
 from ... import DATE_FORMAT
-from ...ui import EcsPanel
+from ...ui import EcsPanel, TaskLifecycleStatusEnum
 
 
 class RunLayout:
@@ -26,13 +26,25 @@ class RunLayout:
         grid.add_column()
         grid.add_column()
 
+        status = TaskLifecycleStatusEnum[self.data.fetcher["task"]["lastStatus"]].value
+
+        grid.add_row(
+            "Status: ",
+            f"[{status.colour}]{status.icon}[/{status.colour}]  ({self.data.fetcher['task']['lastStatus'].lower()})",
+        )
         grid.add_row(
             "Definition: ",
             self.data.fetcher["task"]["taskDefinitionArn"].rsplit("/")[1],
         )
+        if self.data.fetcher["task"].get("startedAt"):
+            label = "Started At: "
+            key = "startedAt"
+        else:
+            label = "Created At: "
+            key = "createdAt"
         grid.add_row(
-            "Started at: ",
-            arrow.get(self.data.fetcher["task"]["startedAt"]).format(DATE_FORMAT),
+            label,
+            arrow.get(self.data.fetcher["task"][key]).format(DATE_FORMAT),
         )
         grid.add_row("Memory: ", self.data.fetcher["task"]["memory"])
         grid.add_row("CPU: ", self.data.fetcher["task"]["cpu"])
@@ -42,6 +54,9 @@ class RunLayout:
     def main_right(self):
         grid = Table.grid()
         grid.add_column()
+
+        for event in self.data.fetcher["logs"]["events"]:
+            grid.add_row(event["message"])
 
         return EcsPanel(grid, title="Last logs")
 

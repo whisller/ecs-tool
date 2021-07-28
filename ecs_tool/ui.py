@@ -73,3 +73,14 @@ class StatusEnum(Enum):
     ACTIVE = StatusStyle("green", "\u2B24")
     IN_PROGRESS = StatusStyle("yellow", "\u25D6")
     STOPPED = StatusStyle("red", "\u25CB")
+
+
+class TaskLifecycleStatusEnum(Enum):
+    RUNNING = StatusEnum.ACTIVE.value
+    ACTIVATING = StatusEnum.IN_PROGRESS.value
+    DEACTIVATING = StatusEnum.IN_PROGRESS.value
+    PENDING = StatusEnum.IN_PROGRESS.value
+    STOPPING = StatusEnum.IN_PROGRESS.value
+    PROVISIONING = StatusEnum.IN_PROGRESS.value
+    DEPROVISIONING = StatusEnum.IN_PROGRESS.value
+    STOPPED = StatusEnum.STOPPED.value

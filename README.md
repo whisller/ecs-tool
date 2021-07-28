@@ -7,6 +7,20 @@ ecs-tool tries to eliminate common caveats for your day-to-day work with Elastic
 
 Dashboards with important information about your services, more intuitive CLI interface and more.
 
+## Screenshots
+SCREENSHOTS HERE
+
+## Summary of functionalities
+### Cluster
+* Listing of all clusters
+### Service
+* Listing of all services
+* Dashboard, which includes `CPUUtilization` and `MemoryUtilization` plots for service (refreshed automatically)
+### Task
+* Run task, returns information about ran task, e.g. logs output from it (refreshed automatically)
+
+More detailed information about available commands below.
+
 ## Installation & usage
 
 ### As python package
@@ -59,9 +73,20 @@ ecs task run [OPTIONS] TASK_DEFINITION [COMMAND]...
 
 Options:
   --cluster TEXT
+  --network-configuration TEXT
+  --capacity-provider-strategy TEXT
 ```
 
 `TASK_DEFINITION` - you can either provide full definition e.g. `my-definition:123` or just name, `my-definition`. If no number is provided, latest version is assumed.
+
+`[COMMAND]` - any command that should be executed on ECS task
+
+Examples:
+
+**Running with Fargate**
+```shell
+ecs task run epsy-dynks --capacity-provider-strategy '{"capacityProvider": "FARGATE"}' --network-configuration '{"awsvpcConfiguration":{"subnets":["subnet-1234567890"],"securityGroups":["sg-123456789"],"assignPublicIp":"DISABLED"}}' --  my_command subcommand --one-option --another-option="test"
+```
 
 ## Can I use grep?
 Yes! All commands results (but dashboards) can be filtered with `grep`

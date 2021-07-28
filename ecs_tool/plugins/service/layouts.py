@@ -5,7 +5,7 @@ from rich.layout import Layout
 from rich.table import Table
 
 from ... import DATE_FORMAT
-from ...ui import AsciiPlotIntegration, EcsPanel, StatusEnum
+from ...ui import AsciiPlotIntegration, EcsPanel, StatusEnum, TaskLifecycleStatusEnum
 
 
 @unique
@@ -13,17 +13,6 @@ class ServiceStatusEnum(Enum):
     ACTIVE = StatusEnum.ACTIVE.value
     DRAINING = StatusEnum.IN_PROGRESS.value
     INACTIVE = StatusEnum.STOPPED.value
-
-
-class TaskLifecycleStatusEnum(Enum):
-    RUNNING = StatusEnum.ACTIVE.value
-    ACTIVATING = StatusEnum.IN_PROGRESS.value
-    DEACTIVATING = StatusEnum.IN_PROGRESS.value
-    PENDING = StatusEnum.IN_PROGRESS.value
-    STOPPING = StatusEnum.IN_PROGRESS.value
-    PROVISIONING = StatusEnum.IN_PROGRESS.value
-    DEPROVISIONING = StatusEnum.IN_PROGRESS.value
-    STOPPED = StatusEnum.STOPPED.value
 
 
 class DashboardLayout:
