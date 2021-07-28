@@ -54,16 +54,14 @@ Options:
 ```
 
 ### Run task
-
 ```shell
 ecs task run [OPTIONS] TASK_DEFINITION [COMMAND]...
 
 Options:
   --cluster TEXT
-  --wait                       Wait till task will reach STOPPED status.
-  --wait-delay INTEGER         Delay between task status check.
-  --wait-max-attempts INTEGER  Maximum attempts to check if task finished.
 ```
 
+`TASK_DEFINITION` - you can either provide full definition e.g. `my-definition:123` or just name, `my-definition`. If no number is provided, latest version is assumed.
+
 ## Can I use grep?
-Yes! All commands (but dashboards) can be filtered with `grep`
+Yes! All commands results (but dashboards) can be filtered with `grep`

@@ -15,9 +15,8 @@ class DataLoader:
         self.context = context
         self.data_fetcher = data_fetcher
         self.click_params = click_params
-        self.data = self.load()
 
-    def load(self):
+    def fetch_data(self):
         return Data(
             self.click_params, self.data_fetcher(self.context, self.click_params)
         )

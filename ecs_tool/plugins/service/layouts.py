@@ -3,6 +3,8 @@ from enum import Enum, unique
 import arrow
 from rich.layout import Layout
 from rich.table import Table
+
+from ... import DATE_FORMAT
 from ...ui import AsciiPlotIntegration, EcsPanel, StatusEnum
 
 
@@ -67,10 +69,12 @@ class DashboardLayout:
                     deployment_active = arrow.get(deployment["createdAt"])
 
             if not deployment_active:
-                deployment_status = f"Completed at {deployment_primary.format('YYYY-MM-DD HH:mm:ss ZZ')}"
+                deployment_status = (
+                    f"Completed at {deployment_primary.format(DATE_FORMAT)}"
+                )
             else:
                 deployment_status = (
-                    f"Running from {deployment_active.format('YYYY-MM-DD HH:mm:ss ZZ')}"
+                    f"Running from {deployment_active.format(DATE_FORMAT)}"
                 )
 
             grid.add_row("Deployment: ", deployment_status)
@@ -105,11 +109,10 @@ class DashboardLayout:
         )
 
     def logs(self):
-        data = self.data.fetcher["logs"]
         grid = Table.grid()
         grid.add_column()
 
-        for event in data["events"]:
+        for event in self.data.fetcher["logs"]:
             grid.add_row(event["message"])
 
         return EcsPanel(grid, title="Last logs")

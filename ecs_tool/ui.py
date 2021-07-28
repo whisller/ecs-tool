@@ -26,7 +26,7 @@ class Ui:
         self.data_loader = data_loader
 
     def refresh(self):
-        return self.layout(self.base_layout()).load(self.data_loader.load())
+        return self.layout(self.base_layout()).load(self.data_loader.fetch_data())
 
 
 class EcsPanel(Panel):

@@ -1,6 +1,7 @@
 import click
 from rich.console import Console
 
+from .exception import EcsToolException
 from .context import ContextObject
 from .plugins import cluster, service, task
 
@@ -16,11 +17,13 @@ def safe_cli():
     Used as an entry point in pyproject.toml::tool.poetry.scripts
     To handle global exceptions.
     """
+    console = Console()
     try:
         cli()
+    except EcsToolException as e:
+        console.print(e.message, style="bold red")
+        return
     except Exception as e:
-        console = Console()
-
         if type(e).__qualname__ == "ClusterNotFoundException":
             # Handle botocore.errorfactory.ClusterNotFoundException exception
             console.print(
