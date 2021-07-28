@@ -108,7 +108,7 @@ class DashboardLayout:
         grid = Table.grid()
         grid.add_column()
 
-        for event in self.data.fetcher["logs"]:
+        for event in self.data.fetcher["logs"]["events"]:
             grid.add_row(event["message"])
 
         return EcsPanel(grid, title="Last logs")
