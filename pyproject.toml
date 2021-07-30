@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ecs-tool"
-version = "0.9.1"
+version = "0.10.0"
 description = "ecs-tool tries to eliminate common caveats for your day-to-day work with Elastic Container Service (ECS)."
 authors = ["Daniel Ancuta <whisller@gmail.com>"]
 license = "MIT"
