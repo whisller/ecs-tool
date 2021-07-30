@@ -29,4 +29,4 @@ def run(ctx, **kwargs):
 @click.argument("task-arn", required=True, type=str)
 @click.pass_context
 def show(ctx, **kwargs):
-    pass
+    raise NotImplemented()
