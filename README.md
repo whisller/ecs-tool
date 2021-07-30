@@ -8,7 +8,7 @@ ecs-tool tries to eliminate common caveats for your day-to-day work with Elastic
 Dashboards with important information about your services, more intuitive CLI interface and more.
 
 ## Screenshots
-[[[https://github.com/whisller/ecs-tool/blob/docs/img/dashboard-small.png|alt=Dashboard]]](https://github.com/whisller/ecs-tool/blob/docs/img/dashboard-big.png)
+[[[https://github.com/whisller/ecs-tool/blob/feature/new-version/docs/img/dashboard-small.png|alt=Dashboard]]](https://github.com/whisller/ecs-tool/blob/feature/new-version/docs/img/dashboard-big.png)
 
 ## Summary of functionalities
 ### Cluster
