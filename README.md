@@ -1,43 +1,94 @@
 # ECS Tool
-[![Build Status](https://travis-ci.org/whisller/ecs-tool.svg?branch=master)](https://travis-ci.org/whisller/ecs-tool) [![PyPI](https://img.shields.io/pypi/v/ecs-tool.svg)](https://pypi.org/project/ecs-tool/) ![](https://img.shields.io/pypi/pyversions/ecs-tool.svg) ![](https://img.shields.io/pypi/l/ecs-tool.svg)
+[![PyPI](https://img.shields.io/pypi/v/ecs-tool.svg)](https://pypi.org/project/ecs-tool/) ![](https://img.shields.io/pypi/pyversions/ecs-tool.svg) ![](https://img.shields.io/pypi/l/ecs-tool.svg)
 
-CLI wrapper on top of "aws ecs" that tries to improve user experience and remove bottlenecks of work with AWS ECS.
+[aws-ecs](https://docs.aws.amazon.com/cli/latest/reference/ecs/index.html) on steroids.
 
-AWS is great platform, you can manage your ECS by web console or ecs-cli. 
-But both tools have their flaws, either speed or user interface.
+ecs-tool tries to eliminate common caveats for your day-to-day work with Elastic Container Service (ECS).
 
-That's why `ecs-tool` came to life, its aim is to be your day to day CLI tool for managing your ECS. 
+Dashboards with important information about your services, more intuitive CLI interface and more.
 
-It is in early stage of development though.
+## Screenshots
+<a href="https://user-images.githubusercontent.com/164009/127609861-145265c3-5b1a-4ed2-a55b-2d400f7b0975.png" title="Dashboard"><img width="150" alt="Dashboard" src="https://user-images.githubusercontent.com/164009/127609795-ac1a5684-a334-418b-932f-15880bfe7066.png"></a>
+<a href="https://user-images.githubusercontent.com/164009/127610177-ca44d337-a2a3-469b-b413-8221e9c4598e.png" title="Cluster listing"><img width="150" alt="Cluster listing" src="https://user-images.githubusercontent.com/164009/127610175-c3ebd211-dc65-4770-8f69-360c1fb5bf89.png"></a>
+<a href="https://user-images.githubusercontent.com/164009/127610437-3d2f153e-7554-4284-9454-cfed8e2a3ac8.png" title="Serices list"><img width="150" alt="Services list" src="https://user-images.githubusercontent.com/164009/127610439-e8d0b543-3062-47c8-918f-4edd30bdf6eb.png"></a>
 
-## Some screenshots
-[ecs services](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-services-1.png) | [ecs tasks](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-tasks-1.png) | [ecs task-definitions](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-task-definitions-1.png) | [ecs task-log](https://github.com/whisller/ecs-tool/blob/master/screenshots/ecs-task-log-1.png)
+## Summary of functionalities
+### Cluster
+* <a href="https://user-images.githubusercontent.com/164009/127610177-ca44d337-a2a3-469b-b413-8221e9c4598e.png">Listing of all clusters</a>
+### Service
+* <a href="https://user-images.githubusercontent.com/164009/127610437-3d2f153e-7554-4284-9454-cfed8e2a3ac8.png">Listing of all services</a>
+* <a href="https://user-images.githubusercontent.com/164009/127609861-145265c3-5b1a-4ed2-a55b-2d400f7b0975.png">Dashboard</a>, which includes `CPUUtilization` and `MemoryUtilization` plots for service (refreshed automatically)
+### Task
+* Run task, returns information about ran task, e.g. logs output from it (refreshed automatically)
 
-## Installation
-```sh
+More detailed information about available commands below.
+
+## Installation & usage
+
+### As python package
+```shell
 pip install ecs-tool
+
+ecs
+
+# with aws-vault
+aws-vault exec my-aws-profile -- ecs 
+```
+
+### With docker
+```shell
+# build image
+docker build -t ecs-tool
+
+docker run -it --rm --name ecs-tool ecs-tool ecs
+
+# with aws-vault
+docker run -it --rm --env-file <(aws-vault exec my-aws-profile -- env | grep "^AWS_") --name ecs-tool ecs-tool ecs
 ```
 
 ## What `ecs-tool` can do?
-List services, tasks, task definitions and logs for those tasks. All of those can be filtered by several attributes.
 
-You can run task definition, here either it will automatically select latest version or you can specify number manually. 
-There is an option to wait for results of this execution.
-
-`ecs-tool` is grep friendly.
-
-## Usage
+### List of available clusters
+```shell
+ecs cluster list
 ```
-$ ecs
-  Usage: ecs [OPTIONS] COMMAND [ARGS]...
-  
-  Options:
-    --help  Show this message and exit.
-  
-  Commands:
-    run-task          Run task.
-    services          List of services.
-    task-definitions  List of task definitions.
-    task-log          Display awslogs for task.
-    tasks             List of tasks.
+
+### List of available services
+```shell
+ecs service list [OPTIONS]
+
+Options:
+  --cluster TEXT
 ```
+
+### Dashboard for service
+```shell
+ecs service dashboard [OPTIONS] SERVICE
+
+Options:
+  --cluster TEXT
+```
+
+### Run task
+```shell
+ecs task run [OPTIONS] TASK_DEFINITION [COMMAND]...
+
+Options:
+  --cluster TEXT
+  --network-configuration TEXT
+  --capacity-provider-strategy TEXT
+```
+
+`TASK_DEFINITION` - you can either provide full definition e.g. `my-definition:123` or just name, `my-definition`. If no number is provided, latest version is assumed.
+
+`[COMMAND]` - any command that should be executed on ECS task
+
+Examples:
+
+**Running with Fargate**
+```shell
+ecs task run epsy-dynks --capacity-provider-strategy '{"capacityProvider": "FARGATE"}' --network-configuration '{"awsvpcConfiguration":{"subnets":["subnet-1234567890"],"securityGroups":["sg-123456789"],"assignPublicIp":"DISABLED"}}' --  my_command subcommand --one-option --another-option="test"
+```
+
+## Can I use grep?
+Yes! All commands results (but dashboards) can be filtered with `grep`

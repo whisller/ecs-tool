@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ecs-tool"
 version = "0.9.1"
-description = "CLI wrapper on top of \"aws ecs\" that tries to improve user experience"
+description = "ecs-tool tries to eliminate common caveats for your day-to-day work with Elastic Container Service (ECS)."
 authors = ["Daniel Ancuta <whisller@gmail.com>"]
 license = "MIT"
 readme = "README.md"
@@ -14,24 +14,35 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3 :: Only",
 ]
 keywords = ["aws", "ecs", "cli"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-click = "^7.0"
+click = "^8.0"
 boto3 = "^1.9"
-terminaltables = "^3.1"
-colorclass = "^2.2"
+rich = "^10.3.0"
+click-log = "^0.3.2"
+loguru = "^0.5.3"
+arrow = "^1.1.0"
+asciiplot = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
-black = "=19.3b0"
+black = "^21.6b0"
+bump2version = "^1.0.1"
+isort = "^5.9.2"
 
 [tool.poetry.scripts]
-ecs = "ecs_tool.cli:cli"
+ecs = "ecs_tool.cli:safe_cli"
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
