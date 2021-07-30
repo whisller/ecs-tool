@@ -14,10 +14,10 @@ Dashboards with important information about your services, more intuitive CLI in
 
 ## Summary of functionalities
 ### Cluster
-* Listing of all clusters
+* <a href="https://user-images.githubusercontent.com/164009/127610177-ca44d337-a2a3-469b-b413-8221e9c4598e.png">Listing of all clusters</a>
 ### Service
-* Listing of all services
-* Dashboard, which includes `CPUUtilization` and `MemoryUtilization` plots for service (refreshed automatically)
+* <a href="https://user-images.githubusercontent.com/164009/127610437-3d2f153e-7554-4284-9454-cfed8e2a3ac8.png">Listing of all services</a>
+* <a href="https://user-images.githubusercontent.com/164009/127609861-145265c3-5b1a-4ed2-a55b-2d400f7b0975.png">Dashboard</a>, which includes `CPUUtilization` and `MemoryUtilization` plots for service (refreshed automatically)
 ### Task
 * Run task, returns information about ran task, e.g. logs output from it (refreshed automatically)
 
