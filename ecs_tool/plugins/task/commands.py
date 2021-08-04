@@ -1,10 +1,10 @@
 import click
 
 from ...data_loader import DataLoader
-from ...runner import LiveRunner
+from ...runner import LiveRunner, Runner
 from ...ui import Ui, make_layout
-from .data import fetch_run_task, fetch_task
-from .layouts import TaskLayout
+from .data import fetch_listing, fetch_logs, fetch_run_task, fetch_task
+from .layouts import ListingLayout, LogsLayout, TaskLayout
 
 
 @click.command(help="Run task")
@@ -20,9 +20,24 @@ def run(ctx, **kwargs):
     ).run()
 
 
-@click.command(help="Show information about ran task")
+@click.command(help="Show information about ran/running task")
 @click.option("--cluster", default="main", type=str)
 @click.argument("task-id", required=True, type=str)
 @click.pass_context
 def show(ctx, **kwargs):
     LiveRunner(Ui(make_layout, TaskLayout, DataLoader(ctx.obj, fetch_task, kwargs), {"header_title": "Task"})).run()
+
+
+@click.command(help="List of running tasks", name="list")
+@click.option("--cluster", default="main", type=str)
+@click.pass_context
+def listing(ctx, **kwargs):
+    Runner(Ui(make_layout, ListingLayout, DataLoader(ctx.obj, fetch_listing, kwargs))).run()
+
+
+@click.command(help="Show logs for task")
+@click.option("--cluster", default="main", type=str)
+@click.argument("task-id", required=True, type=str)
+@click.pass_context
+def logs(ctx, **kwargs):
+    LiveRunner(Ui(make_layout, LogsLayout, DataLoader(ctx.obj, fetch_logs, kwargs))).run()

@@ -22,7 +22,9 @@ Dashboards with important information about your services, more intuitive CLI in
 * <a href="https://user-images.githubusercontent.com/164009/127609861-145265c3-5b1a-4ed2-a55b-2d400f7b0975.png">Dashboard</a>, which includes `CPUUtilization` and `MemoryUtilization` plots for service (refreshed automatically)
 ### Task
 * Run task, returns information about ran task, e.g. logs output from it (refreshed automatically)
-* Show task, displays information about running task (refreshed automatically)
+* Show list of running tasks
+* Show single task, displays information about running task (refreshed automatically)
+* Show tasks logs (refreshed automatically)
 
 More detailed information about available commands below.
 
@@ -96,9 +98,25 @@ Examples:
 ecs task run epsy-dynks --capacity-provider-strategy '{"capacityProvider": "FARGATE"}' --network-configuration '{"awsvpcConfiguration":{"subnets":["subnet-1234567890"],"securityGroups":["sg-123456789"],"assignPublicIp":"DISABLED"}}' --  my_command subcommand --one-option --another-option="test"
 ```
 
+### List of running tasks
+```shell
+ecs task list [OPTIONS]
+
+Options:
+  --cluster TEXT
+```
+
 ### Display information about ran task
 ```shell
 ecs task show [OPTIONS] TASK_ID
+
+Options:
+  --cluster TEXT
+```
+
+### Display task logs
+```shell
+ecs task logs [OPTIONS] TASK_ID
 
 Options:
   --cluster TEXT
