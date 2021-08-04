@@ -28,6 +28,9 @@ class BaseLayout:
         self.params = params
         self.data = None
 
+    def load(self, data):
+        raise NotImplemented
+
 
 class Ui:
     def __init__(self, base_layout, layout, data_loader, layout_params=None):
