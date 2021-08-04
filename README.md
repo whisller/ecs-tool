@@ -22,6 +22,7 @@ Dashboards with important information about your services, more intuitive CLI in
 * <a href="https://user-images.githubusercontent.com/164009/127609861-145265c3-5b1a-4ed2-a55b-2d400f7b0975.png">Dashboard</a>, which includes `CPUUtilization` and `MemoryUtilization` plots for service (refreshed automatically)
 ### Task
 * Run task, returns information about ran task, e.g. logs output from it (refreshed automatically)
+* Show task, displays information about running task (refreshed automatically)
 
 More detailed information about available commands below.
 
@@ -50,11 +51,13 @@ docker run -it --rm --env-file <(aws-vault exec my-aws-profile -- env | grep "^A
 
 ## What `ecs-tool` can do?
 
+### Cluster
 ### List of available clusters
 ```shell
 ecs cluster list
 ```
 
+### Service
 ### List of available services
 ```shell
 ecs service list [OPTIONS]
@@ -71,6 +74,7 @@ Options:
   --cluster TEXT
 ```
 
+### Task
 ### Run task
 ```shell
 ecs task run [OPTIONS] TASK_DEFINITION [COMMAND]...
@@ -90,6 +94,14 @@ Examples:
 **Running with Fargate**
 ```shell
 ecs task run epsy-dynks --capacity-provider-strategy '{"capacityProvider": "FARGATE"}' --network-configuration '{"awsvpcConfiguration":{"subnets":["subnet-1234567890"],"securityGroups":["sg-123456789"],"assignPublicIp":"DISABLED"}}' --  my_command subcommand --one-option --another-option="test"
+```
+
+### Display information about ran task
+```shell
+ecs task show [OPTIONS] TASK_ID
+
+Options:
+  --cluster TEXT
 ```
 
 ## Can I use grep?
