@@ -5,7 +5,7 @@ from rich.layout import Layout
 from rich.table import Table
 
 from ... import DATE_FORMAT
-from ...ui import AsciiPlotIntegration, EcsPanel, StatusEnum, TaskLifecycleStatusEnum
+from ...ui import NO_DATA_AVAILABLE, AsciiPlotIntegration, EcsPanel, StatusEnum, TaskLifecycleStatusEnum
 
 
 @unique
@@ -67,6 +67,9 @@ class DashboardLayout:
         return EcsPanel(grid, title="Basic info")
 
     def tasks(self):
+        if not self.data.fetcher.get("tasks"):
+            return EcsPanel(NO_DATA_AVAILABLE, title="Tasks")
+
         grid = Table.grid()
         grid.add_column()
         grid.add_column()
@@ -82,18 +85,31 @@ class DashboardLayout:
         return EcsPanel(grid, title="Tasks")
 
     def memory(self):
+        content = (
+            AsciiPlotIntegration(self.data.fetcher["cloudwatch_memory_data"])
+            if self.data.fetcher.get("cloudwatch_memory_data")
+            else NO_DATA_AVAILABLE
+        )
         return EcsPanel(
-            AsciiPlotIntegration(self.data.fetcher["cloudwatch_memory_data"]),
+            content,
             title="MemoryUtilization",
         )
 
     def cpu(self):
+        content = (
+            AsciiPlotIntegration(self.data.fetcher["cloudwatch_cpu_data"])
+            if self.data.fetcher.get("cloudwatch_cpu_data")
+            else NO_DATA_AVAILABLE
+        )
         return EcsPanel(
-            AsciiPlotIntegration(self.data.fetcher["cloudwatch_cpu_data"]),
+            content,
             title="CPUUtilization",
         )
 
     def logs(self):
+        if not self.data.fetcher.get("logs"):
+            return EcsPanel(NO_DATA_AVAILABLE, title="Last logs")
+
         grid = Table.grid()
         grid.add_column()
 

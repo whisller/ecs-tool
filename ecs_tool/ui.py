@@ -7,6 +7,9 @@ from rich.console import RenderGroup
 from rich.jupyter import JupyterMixin
 from rich.layout import Layout
 from rich.panel import Panel
+from rich.text import Text
+
+NO_DATA_AVAILABLE = Text("No data available", style="bold red")
 
 
 def make_layout():
@@ -38,7 +41,7 @@ class EcsPanel(Panel):
 class AsciiPlotIntegration(JupyterMixin):
     def __init__(self, data):
         y_values, x_ticks = self._prepare_data(data)
-        chart = asciiize(y_values, inter_points_margin=2, x_ticks=x_ticks)
+        chart = asciiize(y_values, inter_points_margin=4, x_ticks=x_ticks)
 
         decoder = AnsiDecoder()
         self.rich_chart = RenderGroup(*decoder.decode(chart))

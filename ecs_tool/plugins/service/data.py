@@ -48,6 +48,9 @@ def fetch_dashboard(context: ContextObject, click_params):
     for iterator in tasks_pagination:
         for task in iterator:
             arns += task["taskArns"]
+
+    if not arns:
+        return {"services": services}
     described_tasks = context.ecs.describe_tasks(cluster=click_params["cluster"], tasks=arns)
 
     cloudwatch_memory_data = _fetch_cloudwatch(
