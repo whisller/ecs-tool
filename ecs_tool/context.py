@@ -1,5 +1,3 @@
-import os
-
 import boto3
 
 
@@ -23,7 +21,7 @@ class ContextObject:
 
     @property
     def aws_region(self):
-        return os.environ.get("AWS_REGION", os.environ.get("AWS_DEFAULT_REGION"))
+        return boto3.session.Session().region_name
 
     @property
     def aws_account_id(self):
