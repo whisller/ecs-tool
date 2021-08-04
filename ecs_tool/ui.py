@@ -22,14 +22,22 @@ def make_layout():
     return layout
 
 
+class BaseLayout:
+    def __init__(self, base_layout, params=None):
+        self.base_layout = base_layout
+        self.params = params
+        self.data = None
+
+
 class Ui:
-    def __init__(self, base_layout, layout, data_loader):
+    def __init__(self, base_layout, layout, data_loader, layout_params=None):
         self.base_layout = base_layout
         self.layout = layout
+        self.layout_params = layout_params
         self.data_loader = data_loader
 
     def refresh(self):
-        return self.layout(self.base_layout()).load(self.data_loader.fetch_data())
+        return self.layout(self.base_layout(), self.layout_params).load(self.data_loader.fetch_data())
 
 
 class EcsPanel(Panel):

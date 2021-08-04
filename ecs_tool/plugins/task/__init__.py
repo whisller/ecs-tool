@@ -1,6 +1,6 @@
 import click
 
-from .commands import run
+from .commands import run, show
 
 
 @click.group(name="task")
@@ -12,3 +12,4 @@ def cli(ctx):
 
 
 cli.add_command(run)
+cli.add_command(show)

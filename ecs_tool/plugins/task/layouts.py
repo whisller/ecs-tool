@@ -3,20 +3,15 @@ from rich.layout import Layout
 from rich.table import Table
 
 from ... import DATE_FORMAT
-from ...ui import EcsPanel, TaskLifecycleStatusEnum
+from ...ui import BaseLayout, EcsPanel, TaskLifecycleStatusEnum
 
 
-class RunLayout:
-    def __init__(self, base_layout):
-        self.base_layout = base_layout
-        self.data = None
-
+class TaskLayout(BaseLayout):
     def header(self):
         grid = Table.grid(expand=True)
         grid.add_column(justify="left", ratio=1)
         grid.add_column(justify="right")
-
-        title = f"Clusters > {self.data.click_params['cluster']} > Task > Run > {self.data.click_params['task_definition']} > {self.data.fetcher['task']['taskArn'].rsplit('/')[2]}"
+        title = f"Clusters > {self.data.click_params['cluster']} > {self.params['header_title']} > {self.data.fetcher['task_definition']['taskDefinitionArn'].rsplit('/')[1]} > {self.data.fetcher['task']['taskArn'].rsplit('/')[2]}"
         grid.add_row(title)
 
         return EcsPanel(grid)

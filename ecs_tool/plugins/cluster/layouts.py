@@ -2,7 +2,7 @@ from enum import Enum
 
 from rich.table import Table
 
-from ...ui import EcsPanel, StatusEnum
+from ...ui import BaseLayout, EcsPanel, StatusEnum
 
 
 class ClusterStatusEnum(Enum):
@@ -13,11 +13,7 @@ class ClusterStatusEnum(Enum):
     INACTIVE = StatusEnum.STOPPED.value
 
 
-class ListingLayout:
-    def __init__(self, base_layout):
-        self.base_layout = base_layout
-        self.data = None
-
+class ListingLayout(BaseLayout):
     def header(self):
         grid = Table.grid(expand=True)
         grid.add_column(justify="left", ratio=1)

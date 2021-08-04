@@ -3,8 +3,8 @@ import click
 from ...data_loader import DataLoader
 from ...runner import LiveRunner
 from ...ui import Ui, make_layout
-from .data import fetch_run_task
-from .layouts import RunLayout
+from .data import fetch_run_task, fetch_task
+from .layouts import TaskLayout
 
 
 @click.command(help="Run task")
@@ -16,17 +16,13 @@ from .layouts import RunLayout
 @click.pass_context
 def run(ctx, **kwargs):
     LiveRunner(
-        Ui(
-            make_layout,
-            RunLayout,
-            DataLoader(ctx.obj, fetch_run_task, kwargs),
-        )
+        Ui(make_layout, TaskLayout, DataLoader(ctx.obj, fetch_run_task, kwargs), {"header_title": "Task > Run"})
     ).run()
 
 
 @click.command(help="Show information about ran task")
 @click.option("--cluster", default="main", type=str)
-@click.argument("task-arn", required=True, type=str)
+@click.argument("task-id", required=True, type=str)
 @click.pass_context
 def show(ctx, **kwargs):
-    raise NotImplemented()
+    LiveRunner(Ui(make_layout, TaskLayout, DataLoader(ctx.obj, fetch_task, kwargs), {"header_title": "Task"})).run()

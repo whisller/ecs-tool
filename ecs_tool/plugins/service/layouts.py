@@ -5,7 +5,7 @@ from rich.layout import Layout
 from rich.table import Table
 
 from ... import DATE_FORMAT
-from ...ui import NO_DATA_AVAILABLE, AsciiPlotIntegration, EcsPanel, StatusEnum, TaskLifecycleStatusEnum
+from ...ui import NO_DATA_AVAILABLE, AsciiPlotIntegration, BaseLayout, EcsPanel, StatusEnum, TaskLifecycleStatusEnum
 
 
 @unique
@@ -15,11 +15,7 @@ class ServiceStatusEnum(Enum):
     INACTIVE = StatusEnum.STOPPED.value
 
 
-class DashboardLayout:
-    def __init__(self, base_layout):
-        self.base_layout = base_layout
-        self.data = None
-
+class DashboardLayout(BaseLayout):
     def header(self):
         grid = Table.grid(expand=True)
         grid.add_column(justify="left", ratio=1)
@@ -76,7 +72,6 @@ class DashboardLayout:
 
         for task in self.data.fetcher["tasks"]["tasks"]:
             status = TaskLifecycleStatusEnum[task["lastStatus"]].value
-
             grid.add_row(
                 task["taskArn"].split("/")[-1][:8] + "... ",
                 f"[{status.colour}]{status.icon}[/{status.colour}]  ({task['lastStatus'].lower()})",
@@ -150,11 +145,7 @@ class DashboardLayout:
         return self.base_layout
 
 
-class ListingLayout:
-    def __init__(self, base_layout):
-        self.base_layout = base_layout
-        self.data = None
-
+class ListingLayout(BaseLayout):
     def header(self):
         grid = Table.grid(expand=True)
         grid.add_column(justify="left", ratio=1)
