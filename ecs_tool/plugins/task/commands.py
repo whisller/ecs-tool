@@ -8,7 +8,7 @@ from .layouts import ListingLayout, LogsLayout, TaskLayout
 
 
 @click.command(help="Run task")
-@click.option("--cluster", default="main", type=str)
+@click.option("-c", "--cluster", type=str, default="main")
 @click.option("--network-configuration", required=False, type=str)
 @click.option("--capacity-provider-strategy", required=False, type=str)
 @click.argument("task-definition", required=True, type=str)
@@ -21,7 +21,7 @@ def run(ctx, **kwargs):
 
 
 @click.command(help="Show information about ran/running task")
-@click.option("--cluster", default="main", type=str)
+@click.option("-c", "--cluster", type=str, default="main")
 @click.argument("task-id", required=True, type=str)
 @click.pass_context
 def show(ctx, **kwargs):
@@ -29,14 +29,14 @@ def show(ctx, **kwargs):
 
 
 @click.command(help="List of running tasks", name="list")
-@click.option("--cluster", default="main", type=str)
+@click.option("-c", "--cluster", type=str, default="main")
 @click.pass_context
 def listing(ctx, **kwargs):
     Runner(Ui(make_layout, ListingLayout, DataLoader(ctx.obj, fetch_listing, kwargs))).run()
 
 
 @click.command(help="Show logs for task")
-@click.option("--cluster", default="main", type=str)
+@click.option("-c", "--cluster", type=str, default="main")
 @click.argument("task-id", required=True, type=str)
 @click.pass_context
 def logs(ctx, **kwargs):

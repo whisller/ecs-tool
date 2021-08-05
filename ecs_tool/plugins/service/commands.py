@@ -8,7 +8,7 @@ from .layouts import DashboardLayout, ListingLayout
 
 
 @click.command(help="List available services", name="list")
-@click.option("--cluster", default="main")
+@click.option("-c", "--cluster", type=str, default="main")
 @click.pass_context
 def listing(ctx, **kwargs):
     Runner(Ui(make_layout, ListingLayout, DataLoader(ctx.obj, fetch_listing, kwargs))).run()
@@ -16,7 +16,7 @@ def listing(ctx, **kwargs):
 
 @click.command(help="Dashboard of service")
 @click.argument("service")
-@click.option("--cluster", default="main")
+@click.option("-c", "--cluster", type=str, default="main")
 @click.pass_context
 def dashboard(ctx, **kwargs):
     LiveRunner(

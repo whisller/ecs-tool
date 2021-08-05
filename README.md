@@ -65,7 +65,7 @@ ecs cluster list
 ecs service list [OPTIONS]
 
 Options:
-  --cluster TEXT
+  -c, --cluster TEXT
 ```
 
 ### Dashboard for service
@@ -73,7 +73,7 @@ Options:
 ecs service dashboard [OPTIONS] SERVICE
 
 Options:
-  --cluster TEXT
+  -c, --cluster TEXT
 ```
 
 ### Task
@@ -82,7 +82,7 @@ Options:
 ecs task run [OPTIONS] TASK_DEFINITION [COMMAND]...
 
 Options:
-  --cluster TEXT
+  -c, --cluster TEXT
   --network-configuration TEXT
   --capacity-provider-strategy TEXT
 ```
@@ -103,7 +103,7 @@ ecs task run epsy-dynks --capacity-provider-strategy '{"capacityProvider": "FARG
 ecs task list [OPTIONS]
 
 Options:
-  --cluster TEXT
+  -c, --cluster TEXT
 ```
 
 ### Display information about ran task
@@ -111,7 +111,7 @@ Options:
 ecs task show [OPTIONS] TASK_ID
 
 Options:
-  --cluster TEXT
+  -c, --cluster TEXT
 ```
 
 ### Display task logs
@@ -119,7 +119,7 @@ Options:
 ecs task logs [OPTIONS] TASK_ID
 
 Options:
-  --cluster TEXT
+  -c, --cluster TEXT
 ```
 
 ## Can I use grep?
